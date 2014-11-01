@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<ruleset name="Empty Code"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+  <description>
+The Empty Code ruleset contains rules that find empty statements of any kind (empty method,
+empty block statement, empty try or catch block,...).
+  </description>
+
+ <rule name="Dup"
+  		  language="java"
+  	  	  since="0.1"
+          message="Avoid duplicate expressions"
+          class="org.taHjaj.wo.pmdplus.dup.DupRule"
+          externalInfoUrl="${pmd.website.baseurl}/rules/java/empty.html#EmptyCatchBlock">
+      <description>
+Dup finds duplicate expressions in code. A bit like cpd but more local and more with semantics
+      </description>
+      <priority>3</priority>
+      <properties>
+      </properties>
+      <example>
+  <![CDATA[
+public void doSomething() {
+  try {
+    FileInputStream fis = new FileInputStream("/tmp/bugger");
+  } catch (IOException ioe) {
+      // not good
+  }
+}
+ ]]>
+      </example>
+    </rule>
+</ruleset>

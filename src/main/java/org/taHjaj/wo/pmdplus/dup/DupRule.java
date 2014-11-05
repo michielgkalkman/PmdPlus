@@ -78,9 +78,10 @@ public class DupRule extends AbstractJavaRule {
 
 			for (final Map.Entry<String, List<Integer>> entry : image2LinesNummbers
 					.entrySet()) {
-				if (entry.getValue().size() > 1) {
+				List<Integer> value = entry.getValue();
+				if (value.size() > 1) {
 					final String lines = StringUtils
-							.join(entry.getValue(), ",");
+							.join(value, ",");
 					addViolation(data, node, new String[] { entry.getKey(),
 							lines });
 				}

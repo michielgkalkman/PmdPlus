@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test-data>
+   <test-code>
+        <description><![CDATA[
+       	Test with implicit this. 
+     ]]></description>
+        <expected-problems>1</expected-problems>
+        <code><![CDATA[
+class X {       
+    private void adjustNumberOfDecks()
+    {
+ while (maxChildDecks < getNumberOfDecks() 
+            && (m_decks.get(getNumberOfDecks()-1)).isEmpty() )
+        {
+            m_decks.remove(getNumberOfDecks()-1);
+        }
+}
+
+}
+        ]]></code>
+    </test-code>
     <test-code>
         <description><![CDATA[
        	Names of annotations (like @SuppressWarnings) must not be considered. 

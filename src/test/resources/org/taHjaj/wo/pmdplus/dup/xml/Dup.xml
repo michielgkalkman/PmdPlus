@@ -2,6 +2,113 @@
 <test-data>
     <test-code>
         <description><![CDATA[
+       	Names of annotations (like @SuppressWarnings) must not be considered. 
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Tuple7))
+            return false;
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        final Tuple7<T1, T2, T3, T4, T5, T6, T7> that = (Tuple7) o;
+        
+        if (!Objects.equals(v1, that.v1)) return false;
+        if (!Objects.equals(v2, that.v2)) return false;
+        if (!Objects.equals(v3, that.v3)) return false;
+        if (!Objects.equals(v4, that.v4)) return false;
+        if (!Objects.equals(v5, that.v5)) return false;
+        if (!Objects.equals(v6, that.v6)) return false;
+        if (!Objects.equals(v7, that.v7)) return false;
+
+        return true;
+    }
+}
+        ]]></code>
+    </test-code>
+	<test-code>
+        <description><![CDATA[
+        Go on this. getNumerOfDecks can be turned into a variable.
+     ]]></description>
+        <expected-problems>1</expected-problems>
+        <code><![CDATA[
+class X {
+    private void adjustNumberOfDecks()
+    {
+        while (maxChildDecks < getNumberOfDecks() 
+            && (m_decks.get(getNumberOfDecks()-1)).isEmpty() )
+        {
+            m_decks.remove(getNumberOfDecks()-1);
+        }
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+        CloneNotSupportedException is not interesting.
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {	
+		public Object clone() throws CloneNotSupportedException {
+			return super.clone();
+		}
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+        card.setDateExpired has different kinds of arguments, and is executed in different if branches
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {	
+    private void addCardInternal(Card card, int level)
+    {
+        // check boundary
+        while (m_decks.size() <= level)
+        {
+            m_decks.add(new ArrayList<Card>());
+        }
+        
+        List<Card> cards = m_decks.get(level);
+        cards.add(card);
+        
+        card.setCategory(this);
+        card.setLevel(level);
+        
+        // sanity checks
+        if (level > 0 && card.getDateExpired() == null)
+            card.setDateExpired(new Date());
+        
+        if (level == 0)
+            card.setDateExpired(null);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+        FormattedText is a class for which a static method is called.
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {
+	public void setSides(final String front, final String back) {
+		final FormattedText frontSide = FormattedText.unformatted(front);
+		final FormattedText backSide = FormattedText.unformatted(back);
+
+		setSides(frontSide, backSide);
+	}
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 simple failure
      ]]></description>
         <expected-problems>1</expected-problems>

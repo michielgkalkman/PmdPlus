@@ -8,18 +8,14 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
-			<artifactId>pmd-core</artifactId>
-			<version>5.2.0</version>
+			<artifactId>pmd</artifactId>
+			<version>5.1.2</version>
 		</dependency>
+
 		<dependency>
-			<groupId>net.sourceforge.pmd</groupId>
-			<artifactId>pmd-java</artifactId>
-			<version>5.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.pmd</groupId>
-			<artifactId>pmd-test</artifactId>
-			<version>5.2.0</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 	</dependencies>
 </project>

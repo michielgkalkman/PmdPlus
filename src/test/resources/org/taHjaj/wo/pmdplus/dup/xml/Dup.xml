@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data>
+    <test-code>
+        <description><![CDATA[
+simple failure
+     ]]></description>
+        <expected-problems>1</expected-problems>
+        <code><![CDATA[
+class X {
+    private static String parseTextNode(Node exampleNode) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < exampleNode.getChildNodes().getLength(); i++) {
+            Node node = exampleNode.getChildNodes().item(i);
+        }
+        return buffer.toString().trim();
+    }
+}
+     ]]></code>
+    </test-code>
+</test-data>

@@ -55,13 +55,6 @@ public class DupRule extends AbstractJavaRule {
 						if (astArguments.getArgumentCount() == 0) {
 							final String name = image.contains(".") ? StringUtils
 									.substringBefore(image, ".") : image;
-
-							// final List variableDeclaratorId = node
-							// .findChildNodesWithXPath(String
-							// .format("//VariableDeclaratorId[@Image='%s']",
-							// name));
-
-							// if (!variableDeclaratorId.isEmpty()) {
 							List<Integer> list = image2LinesNummbers.get(image);
 
 							if (list == null) {
@@ -70,7 +63,6 @@ public class DupRule extends AbstractJavaRule {
 							}
 
 							list.add(astName.getBeginLine());
-							// }
 						}
 					}
 				}
@@ -78,7 +70,7 @@ public class DupRule extends AbstractJavaRule {
 
 			for (final Map.Entry<String, List<Integer>> entry : image2LinesNummbers
 					.entrySet()) {
-				List<Integer> value = entry.getValue();
+				final List<Integer> value = entry.getValue();
 				if (value.size() > 1) {
 					final String lines = StringUtils
 							.join(value, ",");

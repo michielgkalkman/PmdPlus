@@ -14,20 +14,6 @@ import org.jaxen.JaxenException;
 
 
 public class DupRule extends AbstractJavaRule {
-	
-	
-//    @Override
-//	public Object visit(final ASTPrimaryExpression node, final Object data) {
-//    	System.out.println(node.getScope());
-//		return super.visit(node, data);
-//	}
-//	
-//    @Override
-//	public Object visit(final ASTName node, final Object data) {
-//    	System.out.println("Name: " + node.getScope());
-//		return super.visit(node, data);
-//	}
-	
     @Override
 	public Object visit(final ASTVariableDeclaratorId node, final Object data) {
     	dump(node);
@@ -53,9 +39,6 @@ public class DupRule extends AbstractJavaRule {
 					}
 					
 					list.add( childNode.getBeginLine());
-					
-					
-					System.out.println( ">>>" + image);
 				}
 			}
 			
@@ -97,17 +80,5 @@ public class DupRule extends AbstractJavaRule {
     		.append( "\n");
     	System.out.println( stringBuilder);
 	}
-    
-//	@Override
-//	public Object visit(final ASTWhileStatement node, final Object data) {
-//        final Node firstStmt = node.jjtGetChild(1);
-//        if (!hasBlockAsFirstChild(firstStmt)) {
-//            addViolation(data, node);
-//        }
-//        return super.visit(node,data);
-//    }
-//    private boolean hasBlockAsFirstChild(final Node node) {
-//        return (((AbstractNode) node).jjtGetNumChildren() != 0 && (((AbstractNode) node).jjtGetChild(0) instanceof ASTBlock));
-//    }
 }
     

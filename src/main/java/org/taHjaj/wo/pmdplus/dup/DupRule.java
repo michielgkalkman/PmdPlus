@@ -53,8 +53,6 @@ public class DupRule extends AbstractJavaRule {
 								.get(0);
 
 						if (astArguments.getArgumentCount() == 0) {
-							final String name = image.contains(".") ? StringUtils
-									.substringBefore(image, ".") : image;
 							List<Integer> list = image2LinesNummbers.get(image);
 
 							if (list == null) {

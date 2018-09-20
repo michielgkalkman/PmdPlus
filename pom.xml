@@ -3,32 +3,32 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.taHjaj.wo</groupId>
 	<artifactId>PmdPlus</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-java</artifactId>
-			<version>5.3.0</version>
+			<version>6.4.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-core</artifactId>
-			<version>5.3.0</version>
+			<version>6.4.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-test</artifactId>
-			<version>5.3.0</version>
+			<version>6.4.0</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
+			<version>3.8</version>
 		</dependency>
 
 		<dependency>

@@ -143,4 +143,36 @@ class X {
 }
      ]]></code>
     </test-code>
+    <test-code>
+        <description><![CDATA[
+two methods returning void
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {
+    private static String parseTextNode(Node exampleNode) {
+        System.out.println();
+        System.out.println();
+        return "done";
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+two methods also returning void
+     ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+class X {
+	private void x() {
+	}
+    private static String parseTextNode(Node exampleNode) {
+        x();
+        x();
+        return "done";
+    }
+}
+     ]]></code>
+    </test-code>
 </test-data>

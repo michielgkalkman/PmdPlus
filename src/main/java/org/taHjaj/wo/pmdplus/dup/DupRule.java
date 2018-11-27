@@ -1,9 +1,14 @@
 package org.taHjaj.wo.pmdplus.dup;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
@@ -26,7 +31,7 @@ public class DupRule extends AbstractJavaRule {
 	public Object visit(final ASTMethodDeclaration node, final Object data) {
 		try {
 
-			final Map<String, List<Integer>> image2LinesNummbers = new HashMap<String, List<Integer>>();
+			final Map<String, List<ASTName>> image2LinesNummbers = new HashMap<String, List<ASTName>>();
 
 			final List<ASTName> astNames = node
 					.findDescendantsOfType(ASTName.class);
@@ -44,8 +49,7 @@ public class DupRule extends AbstractJavaRule {
 					final ASTPrimaryExpression astPrimaryExpression = (ASTPrimaryExpression) astName
 							.getNthParent(2);
 
-					List arguments;
-					arguments = astPrimaryExpression
+					List arguments = astPrimaryExpression
 							.findChildNodesWithXPath("PrimarySuffix/Arguments");
 
 					if (!arguments.isEmpty()) {
@@ -53,29 +57,20 @@ public class DupRule extends AbstractJavaRule {
 								.get(0);
 
 						if (astArguments.getArgumentCount() == 0) {
-							List<Integer> list = image2LinesNummbers.get(image);
+							List<ASTName> list = image2LinesNummbers.get(image);
 
 							if (list == null) {
-								list = new ArrayList<Integer>();
+								list = new ArrayList<ASTName>();
 								image2LinesNummbers.put(image, list);
 							}
 
-							list.add(astName.getBeginLine());
+							list.add(astName);
 						}
 					}
 				}
 			}
 
-			for (final Map.Entry<String, List<Integer>> entry : image2LinesNummbers
-					.entrySet()) {
-				final List<Integer> value = entry.getValue();
-				if (value.size() > 1) {
-					final String lines = StringUtils
-							.join(value, ",");
-					addViolation(data, node, new String[] { entry.getKey(),
-							lines });
-				}
-			}
+			processImages(node, data, image2LinesNummbers);
 		} catch (final JaxenException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -88,6 +83,89 @@ public class DupRule extends AbstractJavaRule {
 
 		return super.visit(node, data);
 	}
+
+    private void processImages(final ASTMethodDeclaration node, final Object data,
+            final Map<String, List<ASTName>> image2LinesNummbers) {
+        for (final Entry<String, List<ASTName>> entry : image2LinesNummbers
+        		.entrySet()) {
+        	final List<ASTName> astNames = entry.getValue();
+        	if (astNames.size() > 1) {
+                final String image = entry.getKey();
+
+                // Check if image is actually a void method:
+                
+        	    final ASTName astName = astNames.get(0);
+
+        	    
+        	    
+                if (astName.getTypeDefinition() != null && astName.getTypeDefinition().isExactType()) {
+                    final String[] split = StringUtils.split( image, '.');
+                    
+                    Class<?> type = astName.getTypeDefinition().getType();
+                    
+                    boolean fVoid = false;
+                    
+                    for( int s=1; s<split.length; s++) {
+                        try {
+                            Field field = null;
+                            final Field[] fields = type.getFields();
+                            for( int i=0; i<fields.length; i++) {
+                                if(split[s].equals(fields[i].getName())) {
+                                    field = fields[i];
+                                    break;
+                                }
+                            }
+                            
+                            if( field != null) {
+                                type = field.getType();
+                            } else {
+                                Method method = null;
+                                final Method[] methods = type.getMethods();
+                                
+                                for( int j=0; j<methods.length; j++) {
+                                    if( split[s].equals(methods[j].getName())) {
+                                        method = methods[j];
+                                        break;
+                                    }
+                                }
+                                
+                                if( method != null) {
+                                    if( "void".equals(method.getReturnType().getTypeName())) {
+                                        fVoid = true;
+                                    }
+                                }
+                            }
+                        } catch (SecurityException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    
+                    if( !fVoid) {
+                        addViolation(node, data, astNames, image);
+                    }
+                } else if (astName.getNameDeclaration() != null) {
+                    try {
+                    if( !astName.getNameDeclaration().getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(net.sourceforge.pmd.lang.java.ast.ASTResultType.class).get(0).isVoid()) {
+                        addViolation(node, data, astNames, image);
+                    }
+                    } catch( Throwable throwable) {
+                        System.err.println( astName.getBeginLine());
+                    }
+                } else {                  
+            		addViolation(node, data, astNames, image);
+                }
+        	}
+        }
+    }
+
+    private void addViolation(final ASTMethodDeclaration node, final Object data, final List<ASTName> astNames,
+            final String image) {
+        final String lines = StringUtils
+                .join(astNames.stream().map( a -> a.getBeginLine()).collect(Collectors.toList()), ",");
+        addViolation(data, node, new String[] {image,
+                lines });
+    }
 
 	private void dump(final AbstractJavaTypeNode node) {
 		final StringBuilder stringBuilder = new StringBuilder();

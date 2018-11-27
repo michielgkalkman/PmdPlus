@@ -41,7 +41,7 @@ Add:
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.10.0</version>
 					<configuration>
 						<rulesets>
 							<ruleset>/rulesets/java/dup.xml</ruleset>
@@ -51,7 +51,7 @@ Add:
 						<dependency>
 							<groupId>org.taHjaj.wo</groupId>
 							<artifactId>PmdPlus</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
+							<version>0.0.2-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 				</plugin>

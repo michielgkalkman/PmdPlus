@@ -51,7 +51,7 @@ Add:
 						<dependency>
 							<groupId>org.taHjaj.wo</groupId>
 							<artifactId>PmdPlus</artifactId>
-							<version>0.0.2-SNAPSHOT</version>
+							<version>0.0.3-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 				</plugin>

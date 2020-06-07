@@ -54,7 +54,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.13.0</version>
 					<configuration>
 						<rulesets>
 							<ruleset>/rulesets/java/dup.xml</ruleset>
@@ -64,14 +64,14 @@
 						<dependency>
 							<groupId>org.taHjaj.wo</groupId>
 							<artifactId>PmdPlus</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
+							<version>0.0.3-SNAPSHOT</version>
 						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.pitest</groupId>
 					<artifactId>pitest-maven</artifactId>
-					<version>1.4.3</version>
+					<version>1.5.2</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

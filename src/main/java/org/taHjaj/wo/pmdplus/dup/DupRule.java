@@ -22,6 +22,8 @@ import net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression;
 import net.sourceforge.pmd.lang.java.ast.AbstractJavaTypeNode;
 import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
 
+import net.sourceforge.pmd.lang.java.typeresolution.typedefinition.JavaTypeDefinition;
+import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 import org.apache.commons.lang3.StringUtils;
 import org.jaxen.JaxenException;
 
@@ -96,12 +98,12 @@ public class DupRule extends AbstractJavaRule {
                 
         	    final ASTName astName = astNames.get(0);
 
-        	    
-        	    
-                if (astName.getTypeDefinition() != null && astName.getTypeDefinition().isExactType()) {
+
+                final JavaTypeDefinition typeDefinition = astName.getTypeDefinition();
+                if (typeDefinition != null && typeDefinition.isExactType()) {
                     final String[] split = StringUtils.split( image, '.');
                     
-                    Class<?> type = astName.getTypeDefinition().getType();
+                    Class<?> type = typeDefinition.getType();
                     
                     boolean fVoid = false;
                     
@@ -144,16 +146,19 @@ public class DupRule extends AbstractJavaRule {
                     if( !fVoid) {
                         addViolation(node, data, astNames, image);
                     }
-                } else if (astName.getNameDeclaration() != null) {
-                    try {
-                    if( !astName.getNameDeclaration().getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(net.sourceforge.pmd.lang.java.ast.ASTResultType.class).get(0).isVoid()) {
+                } else {
+                    final NameDeclaration nameDeclaration = astName.getNameDeclaration();
+                    if (nameDeclaration != null) {
+                        try {
+                        if( !nameDeclaration.getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(net.sourceforge.pmd.lang.java.ast.ASTResultType.class).get(0).isVoid()) {
+                            addViolation(node, data, astNames, image);
+                        }
+                        } catch( Throwable throwable) {
+                            System.err.println( astName.getBeginLine());
+                        }
+                    } else {
                         addViolation(node, data, astNames, image);
                     }
-                    } catch( Throwable throwable) {
-                        System.err.println( astName.getBeginLine());
-                    }
-                } else {                  
-            		addViolation(node, data, astNames, image);
                 }
         	}
         }

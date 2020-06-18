@@ -14,7 +14,7 @@ empty block statement, empty try or catch block,...).
   	  	  since="0.1"
           message="Duplicate expression {0} found in lines {1}"
           class="org.taHjaj.wo.pmdplus.dup.DupRule"
-          externalInfoUrl="${pmd.website.baseurl}/rules/java/empty.html#EmptyCatchBlock">
+          externalInfoUrl="https://github.com/michielgkalkman/PmdPlus">
       <description>
 Dup finds duplicate expressions in code. A bit like cpd but more local and more with semantics
       </description>

@@ -9,6 +9,20 @@ copyDirectory(final File srcDir, final File destDir, final FileFilter filter, fi
 executes getCanonicalPath() multiple times on the same path. I might be wrong, but that
 seems wasteful.
 
+The results are:
+
+```
+Benchmark                                                                                  Mode  Cnt      Score      Error  Units
+taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.dedupBenchmark3by3  avgt   50  26499,674 ± 1272,241  us/op
+taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.deduppedBenchmark   avgt   50   7716,486 ± 3790,750  us/op
+taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.runBenchmark        avgt   50   6944,228 ±  453,129  us/op
+taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.runBenchmark3by3    avgt   50  27198,800 ± 5187,704  us/op
+```
+
+That is: in both cases performance has improved by a few percent.
+
+BTW: I am not an expert in creating benchmarks, so I might be (and possibly are) wrong. So, feedback is welcome.
+
 ```
 Running org.taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest
 WARNING: An illegal reflective access operation has occurred

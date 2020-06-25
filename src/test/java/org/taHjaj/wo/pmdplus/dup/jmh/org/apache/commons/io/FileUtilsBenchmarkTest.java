@@ -34,15 +34,18 @@ public class FileUtilsBenchmarkTest {
                 .timeUnit(TimeUnit.MICROSECONDS)
                 .warmupTime(TimeValue.seconds(2))
                 .warmupIterations(5)
-                .measurementTime(TimeValue.seconds(2))
+                .measurementTime(TimeValue.milliseconds(15))
                 .measurementIterations(50)
                 .threads(1)
                 .forks(1)
                 .shouldFailOnError(true)
-                .shouldDoGC(true)
+                .shouldDoGC(false)
                 //.jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining")
                 //.addProfiler(WinPerfAsmProfiler.class)
                 .build();
+
+        // Wait 10 minutes so the system can settle down.
+        Thread.sleep(1000*60*5);
 
         new Runner(opt).run();
     }

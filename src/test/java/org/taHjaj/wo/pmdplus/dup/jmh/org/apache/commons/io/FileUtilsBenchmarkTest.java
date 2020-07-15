@@ -6,18 +6,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.*;
 
@@ -32,10 +30,10 @@ public class FileUtilsBenchmarkTest {
                 // Set the following options as needed
                 .mode (Mode.AverageTime)
                 .timeUnit(TimeUnit.MICROSECONDS)
-                .warmupTime(TimeValue.seconds(2))
+                .warmupTime(TimeValue.seconds(1))
                 .warmupIterations(5)
                 .measurementTime(TimeValue.milliseconds(15))
-                .measurementIterations(50)
+                .measurementIterations(10)
                 .threads(1)
                 .forks(1)
                 .shouldFailOnError(true)
@@ -43,9 +41,6 @@ public class FileUtilsBenchmarkTest {
                 //.jvmArgs("-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining")
                 //.addProfiler(WinPerfAsmProfiler.class)
                 .build();
-
-        // Wait 10 minutes so the system can settle down.
-        Thread.sleep(1000*60*5);
 
         new Runner(opt).run();
     }
@@ -62,11 +57,15 @@ public class FileUtilsBenchmarkTest {
         public void setUp() throws IOException {
             fromTempDir = Files.createTempDirectory("benchmark-1");
             toTempDir = Files.createTempDirectory("benchmark-2");
+
+            System.out.println( "Created fromTempDir " + fromTempDir.toString());
+            System.out.println( "Created toTempDir " + toTempDir.toString());
+
             fromTempFile = fromTempDir.toFile();
             toTempFile = toTempDir.toFile();
         }
 
-        @TearDown
+        @TearDown(Level.Invocation)
         public void tearDown() throws IOException {
             deleteDirectoryRecursively(fromTempDir);
             deleteDirectoryRecursively(toTempDir);
@@ -85,31 +84,76 @@ public class FileUtilsBenchmarkTest {
             fromTempDir = Files.createTempDirectory("benchmark-1");
             toTempDir = Files.createTempDirectory("benchmark-2");
 
-            fill( fromTempDir, 3, 3);
+            System.out.println( "Created fromTempDir " + fromTempDir.toString());
+            System.out.println( "Created toTempDir " + toTempDir.toString());
+
+            fill( fromTempDir, 3, 3, 3);
 
             fromTempFile = fromTempDir.toFile();
             toTempFile = toTempDir.toFile();
         }
 
-        @TearDown
+        @TearDown(Level.Invocation)
         public void tearDown() throws IOException {
             deleteDirectoryRecursively(fromTempDir);
             deleteDirectoryRecursively(toTempDir);
         }
     }
 
-    private static void deleteDirectoryRecursively(Path fromTempDir) throws IOException {
-        Files.walk(fromTempDir)
-                .map(Path::toFile).forEach(File::delete);
-    }
+    @Test
+    public void testje() throws IOException {
+        final Dirs1by1 dirs1by1 = new Dirs1by1();
+        dirs1by1.setUp();
 
-    @Benchmark
-    public void runBenchmark( Dirs1by1 dirs1by1) throws IOException {
         final File fromTempFile = dirs1by1.fromTempFile;
         final File toTempFile = dirs1by1.toTempFile;
 
         copyDirectory(fromTempFile, toTempFile, null);
+
+        System.out.println( "Copied from " + fromTempFile.getCanonicalPath());
+        System.out.println( "Copied to " + toTempFile.getCanonicalPath());
+
+        dirs1by1.tearDown();
     }
+
+    @Test
+    public void testje2() throws IOException {
+        final Dirs3by3 dirs3by3 = new Dirs3by3();
+        dirs3by3.setUp();
+
+        final File fromTempFile = dirs3by3.fromTempFile;
+        final File toTempFile = dirs3by3.toTempFile;
+
+        copyDirectory(fromTempFile, toTempFile, null);
+
+        System.out.println( "Copied from " + fromTempFile.getCanonicalPath());
+        System.out.println( "Copied to " + toTempFile.getCanonicalPath());
+
+        dirs3by3.tearDown();
+    }
+
+    private static void deleteDirectoryRecursively(Path pathToBeDeleted) {
+        System.out.println( "Deleting " + pathToBeDeleted.toString());
+
+        try {
+            Files.walk(pathToBeDeleted)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+
+            Files.deleteIfExists(pathToBeDeleted);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    @Benchmark
+//    public void dedupBenchmark3by3(Dirs3by3 dirs3by3) throws IOException {
+//        final File fromTempFile = dirs3by3.fromTempFile;
+//        final File toTempFile = dirs3by3.toTempFile;
+//
+//        copyDirectory(fromTempFile, toTempFile, null);
+//    }
 
     @Benchmark
     public void deduppedBenchmark( Dirs1by1 dirs1by1) throws IOException {
@@ -120,29 +164,30 @@ public class FileUtilsBenchmarkTest {
     }
 
     @Benchmark
-    public void runBenchmark3by3(Dirs3by3 dirs3by3) throws IOException {
-        final File fromTempFile = dirs3by3.fromTempFile;
-        final File toTempFile = dirs3by3.toTempFile;
+    public void arunBenchmark( Dirs1by1 dirs1by1) throws IOException {
+        final File fromTempFile = dirs1by1.fromTempFile;
+        final File toTempFile = dirs1by1.toTempFile;
 
         copyDirectory(fromTempFile, toTempFile, null);
     }
 
-    @Benchmark
-    public void dedupBenchmark3by3(Dirs3by3 dirs3by3) throws IOException {
-        final File fromTempFile = dirs3by3.fromTempFile;
-        final File toTempFile = dirs3by3.toTempFile;
+//    @Benchmark
+//    public void arunBenchmark3by3(Dirs3by3 dirs3by3) throws IOException {
+//        final File fromTempFile = dirs3by3.fromTempFile;
+//        final File toTempFile = dirs3by3.toTempFile;
+//
+//        copyDirectory(fromTempFile, toTempFile, null);
+//    }
 
-        deduppedCopyDirectory(fromTempFile, toTempFile, null);
-    }
-
-    private static void fill(Path fromTempDir, int nrSubDirs, int nrFiles) throws IOException {
+    private static void fill(Path fromTempDir, int depth, int nrSubDirs, int nrFiles) throws IOException {
         for(int i=0;i<nrFiles;i++) {
             Files.createTempFile( fromTempDir, "benchmark-" + i, ".txt");
         }
-        final int nrSubSubDirs = nrSubDirs - 1;
-        for( int j=0;j<nrSubDirs;j++) {
-            Path newTempDir = Files.createTempDirectory("benchmark-" + j);
-            fill( newTempDir, nrSubSubDirs, nrFiles);
+        if( depth > 0) {
+            for (int j = 0; j < nrSubDirs; j++) {
+                Path newTempDir = Files.createTempDirectory(fromTempDir, "benchmark-" + j);
+                fill(newTempDir, depth-1, nrSubDirs, nrFiles);
+            }
         }
     }
 
@@ -199,7 +244,7 @@ public class FileUtilsBenchmarkTest {
      */
     public static void deduppedCopyDirectory(final File srcDir, final File destDir,
                                      final FileFilter filter) throws IOException {
-        copyDirectory(srcDir, destDir, filter, true);
+        deduppedCopyDirectory(srcDir, destDir, filter, true);
     }
 
     /**

@@ -3,10 +3,13 @@ package org.taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.profile.WinPerfAsmProfiler;
+import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
+import org.spf4j.stackmonitor.JmhFlightRecorderProfiler;
+import org.spf4j.stackmonitor.JmhNewFlightRecorderProfiler;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -64,13 +67,35 @@ public class FileUtilsBenchmarkTest {
     //
     // In partcularly I cannot explain why the deduppedBenchmark benchmark seems to be slower than the arunBenchmark.
     //
+    // Interesting sources:
+    // http://tutorials.jenkov.com/java-performance/jmh.html
+    // https://github.com/corretto/corretto-jmc/releases
+    // https://docs.oracle.com/cd/E15289_01/JRCLR/optionxx.htm#JRCLR275 (Parameters for -XX:StartFlightRecording)
+    // https://stackoverflow.com/questions/36807008/is-it-possible-to-run-a-jmh-benchmark-under-an-external-profiler#answer-37857708
+    // https://github.com/zolyfarkas/spf4j
+    // https://stackoverflow.com/questions/38926255/maven-annotation-processing-processor-not-found
+    
 
     @Test
     public void testCopyDirectories() throws Exception {
+
+        final String destinationFolder = System.getProperty("basedir",
+                org.spf4j.base.Runtime.USER_DIR) + "/target";
+        final String profile = System.getProperty("basedir",
+                org.spf4j.base.Runtime.USER_DIR) + "/src/main/jfc/profile.jfc";
+        //        final String profile = System.getProperty("basedir",
+//                org.spf4j.base.Runtime.USER_DIR) + "/src/main/jfc/profile.jfc";
         Options opt = new OptionsBuilder()
                 // Specify which benchmarks to run.
                 // You can be more specific if you'd like to run only one benchmark per test.
                 .include(this.getClass().getName() + ".*")
+                .addProfiler(JmhNewFlightRecorderProfiler.class)
+                .jvmArgs("-Xmx256m", "-Xms256m", // "-XX:+UnlockCommercialFeatures",
+                        "-Djmh.stack.profiles=" + destinationFolder,
+                        "-Djmh.executor=FJP",
+                        "-Djmh.fr.options=defaultrecording=true,settings=" + profile)
+                .result(destinationFolder + "/" + "benchmarkResults.csv")
+                .resultFormat(ResultFormatType.CSV)
                 // Set the following options as needed
                 .mode (Mode.AverageTime)
                 .timeUnit(TimeUnit.MICROSECONDS)

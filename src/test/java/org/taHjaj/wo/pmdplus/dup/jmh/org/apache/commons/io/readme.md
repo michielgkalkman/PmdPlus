@@ -39,7 +39,7 @@ taHjaj.wo.pmdplus.....arunBenchmark      | avgt | 100 |    11273,827 | ±  2165,
 taHjaj.wo.pmdplus.....arunBenchmark1by1  | avgt | 100 |    32702,611 | ±  1813,470 | us/op |
 taHjaj.wo.pmdplus.....arunBenchmark2by2  | avgt | 100 |   152587,381 | ±  4642,588 | us/op |
 taHjaj.wo.pmdplus.....arunBenchmark3by3  | avgt | 100 |  1195478,564 | ± 24303,450 | us/op |
-taHjaj.wo.pmdplus.....dedupBenchmark1by1 | avgt   100 |    30884,652 | ±  1310,080 | us/op |
+taHjaj.wo.pmdplus.....dedupBenchmark1by1 | avgt | 100 |    30884,652 | ±  1310,080 | us/op |
 taHjaj.wo.pmdplus.....dedupBenchmark2by2 | avgt | 100 |   147020,471 | ±  4613,101 | us/op |
 taHjaj.wo.pmdplus.....dedupBenchmark3by3 | avgt | 100 |  1185322,846 | ± 24429,620 | us/op |
 taHjaj.wo.pmdplus.....deduppedBenchmark  | avgt | 100 |    11565,818 | ±  1937,442 | us/op |

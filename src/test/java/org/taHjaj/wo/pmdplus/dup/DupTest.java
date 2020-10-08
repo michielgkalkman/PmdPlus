@@ -4,7 +4,6 @@
 package org.taHjaj.wo.pmdplus.dup;
 
 import net.sourceforge.pmd.testframework.SimpleAggregatorTst;
-
 import org.junit.Before;
 
 

@@ -1,5 +1,14 @@
 package org.taHjaj.wo.pmdplus.dup;
 
+import net.sourceforge.pmd.RuleContext;
+import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.java.ast.*;
+import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
+import net.sourceforge.pmd.lang.java.typeresolution.typedefinition.JavaTypeDefinition;
+import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
+import org.apache.commons.lang3.StringUtils;
+import org.jaxen.JaxenException;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,24 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.lang.ast.Node;
-import net.sourceforge.pmd.lang.java.ast.ASTAnnotation;
-import net.sourceforge.pmd.lang.java.ast.ASTArguments;
-import net.sourceforge.pmd.lang.java.ast.ASTMarkerAnnotation;
-import net.sourceforge.pmd.lang.java.ast.ASTMethodDeclaration;
-import net.sourceforge.pmd.lang.java.ast.ASTName;
-import net.sourceforge.pmd.lang.java.ast.ASTNameList;
-import net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression;
-import net.sourceforge.pmd.lang.java.ast.AbstractJavaTypeNode;
-import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
-
-import net.sourceforge.pmd.lang.java.typeresolution.typedefinition.JavaTypeDefinition;
-import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
-import org.apache.commons.lang3.StringUtils;
-import org.jaxen.JaxenException;
 
 public class DupRule extends AbstractJavaRule {
 

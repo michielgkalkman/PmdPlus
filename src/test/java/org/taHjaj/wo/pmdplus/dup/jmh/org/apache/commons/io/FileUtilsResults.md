@@ -20,7 +20,7 @@ OpenJDK 64-Bit Server VM Corretto-11.0.8.10.1 (build 11.0.8+10-LTS, mixed mode)
 
 Results from two test runs:
 
-| Benchmark|                                                                                | Mode | Cnt | Score       | Error       | Units |
+| Benchmark                                                                                 | Mode | Cnt | Score       | Error       | Units |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark      | avgt | 100 |   11083,590 | ±   768,848 | us/op |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark1by1  | avgt | 100 |   51988,380 | ± 11676,741 | us/op |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark2by2  | avgt | 100 |  204613,482 | ± 37215,888 | us/op |
@@ -30,7 +30,7 @@ Results from two test runs:
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.dedupBenchmark3by3 | avgt | 100 | 1154023,563 | ± 15089,337 | us/op |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.deduppedBenchmark  | avgt | 100 |   14246,154 | ±  2367,264 | us/op |
 
-| Benchmark|                                                                                | Mode | Cnt | Score        | Error       | Units |
+| Benchmark                                                                                 | Mode | Cnt | Score        | Error       | Units |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark      | avgt | 100 |    11273,827 | ±  2165,753 | us/op |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark1by1  | avgt | 100 |    32702,611 | ±  1813,470 | us/op |
 | taHjaj.wo.pmdplus.dup.jmh.org.apache.commons.io.FileUtilsBenchmarkTest.arunBenchmark2by2  | avgt | 100 |   152587,381 | ±  4642,588 | us/op |

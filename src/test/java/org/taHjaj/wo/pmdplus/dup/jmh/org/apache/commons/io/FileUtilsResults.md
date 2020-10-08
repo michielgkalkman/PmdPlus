@@ -14,9 +14,9 @@ and ran this code on my Dell Latitude E5550 laptop using Windows 10
 64-bit with 16GB memory and an Intel(R) Core(TM) i7-5600 CPU @ 2.60GHz
 using a LITEONIT LCS-256L9S-11 2.5 7mm 256GB disk drive
 using JDK:
-openjdk version "11.0.8" 2020-07-14 LTS
-OpenJDK Runtime Environment Corretto-11.0.8.10.1 (build 11.0.8+10-LTS)
-OpenJDK 64-Bit Server VM Corretto-11.0.8.10.1 (build 11.0.8+10-LTS, mixed mode)
+- openjdk version "11.0.8" 2020-07-14 LTS
+- OpenJDK Runtime Environment Corretto-11.0.8.10.1 (build 11.0.8+10-LTS)
+- OpenJDK 64-Bit Server VM Corretto-11.0.8.10.1 (build 11.0.8+10-LTS, mixed mode)
 
 Results from two test runs:
 
@@ -47,9 +47,9 @@ On the whole, the deduppedBenchmarks seem to perform better, but I am definitely
 In partcularly I cannot explain why the deduppedBenchmark benchmark seems to be slower than the arunBenchmark.
 
 Interesting sources:
-http://tutorials.jenkov.com/java-performance/jmh.html
-https://github.com/corretto/corretto-jmc/releases
-https://docs.oracle.com/cd/E15289_01/JRCLR/optionxx.htm#JRCLR275 (Parameters for -XX:StartFlightRecording)
-https://stackoverflow.com/questions/36807008/is-it-possible-to-run-a-jmh-benchmark-under-an-external-profiler#answer-37857708
-https://github.com/zolyfarkas/spf4j
-https://stackoverflow.com/questions/38926255/maven-annotation-processing-processor-not-found
+- http://tutorials.jenkov.com/java-performance/jmh.html
+- https://github.com/corretto/corretto-jmc/releases
+- https://docs.oracle.com/cd/E15289_01/JRCLR/optionxx.htm#JRCLR275 (Parameters for -XX:StartFlightRecording)
+- https://stackoverflow.com/questions/36807008/is-it-possible-to-run-a-jmh-benchmark-under-an-external-profiler#answer-37857708
+- https://github.com/zolyfarkas/spf4j
+- https://stackoverflow.com/questions/38926255/maven-annotation-processing-processor-not-found

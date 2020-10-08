@@ -14,6 +14,7 @@ and ran this code on my Dell Latitude E5550 laptop using:
 - Windows 10 64-bit with 16GB memory and
 - an Intel(R) Core(TM) i7-5600 CPU @ 2.60GHz
 - and using a LITEONIT LCS-256L9S-11 2.5 7mm 256GB disk drive
+
 and ran the test with the following JDK:
 - openjdk version "11.0.8" 2020-07-14 LTS
 - OpenJDK Runtime Environment Corretto-11.0.8.10.1 (build 11.0.8+10-LTS)

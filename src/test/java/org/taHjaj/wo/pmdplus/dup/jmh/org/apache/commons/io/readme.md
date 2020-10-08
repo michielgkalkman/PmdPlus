@@ -44,7 +44,7 @@ taHjaj.wo.pmdplus.....dedupBenchmark2by2 | avgt | 100 |   147020,471 | ±  4613,
 taHjaj.wo.pmdplus.....dedupBenchmark3by3 | avgt | 100 |  1185322,846 | ± 24429,620 | us/op |
 taHjaj.wo.pmdplus.....deduppedBenchmark  | avgt | 100 |    11565,818 | ±  1937,442 | us/op |
 
-On the whole, the deduppedBenchmarks seem to perform better, but I am definitely not an expert on this.
+On the whole, the deduppedBenchmarks seem to perform better, but I am definitely not an expert on benchmarking and profiling.
 
 In partcularly I cannot explain why the deduppedBenchmark benchmark seems to be slower than the arunBenchmark.
 

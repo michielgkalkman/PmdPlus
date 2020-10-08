@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.8</version>
+			<version>3.11</version>
 		</dependency>
 
 		<dependency>
@@ -59,10 +59,19 @@
 			<version>${jmh.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.spf4j/spf4j-jmh -->
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.8.1</version>
+			<groupId>org.spf4j</groupId>
+			<artifactId>spf4j-jmh</artifactId>
+			<version>8.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.spf4j/spf4j-core -->
+		<dependency>
+			<groupId>org.spf4j</groupId>
+			<artifactId>spf4j-core</artifactId>
+			<version>8.8.5</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -86,6 +95,28 @@
 					<source>11</source>
 					<target>11</target>
 				</configuration>
+				<executions>
+					<execution>
+						<id>process-test-annotations</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<proc>only</proc>
+							<annotationProcessors>
+								<annotationProcessor>org.openjdk.jmh.generators.BenchmarkProcessor</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.openjdk.jmh</groupId>
+						<artifactId>jmh-generator-annprocess</artifactId>
+						<version>${jmh.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>

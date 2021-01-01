@@ -92,7 +92,7 @@ public class DupIfRule extends AbstractJavaRule {
             System.out.printf("Compare %s with %s%n", ifExpressionString, statementExpressionString);
             if (ifExpressionString.equals(statementExpressionString)) {
                 System.out.printf("Equal %s with %s%n", ifExpressionString, statementExpressionString);
-                addViolation(ifE, data, Arrays.asList(ifE, statementExpression), ifE.getImage());
+                addViolation(ifE, data, Arrays.asList(ifE, statementExpression), toString(ifE));
             } else {
                 System.out.printf("Not equal %s with %s%n", ifExpressionString, statementExpressionString);
             }
@@ -110,6 +110,11 @@ public class DupIfRule extends AbstractJavaRule {
     private void toString(StringBuilder stringBuilder, JavaNode javaNode) {
 
         if( javaNode instanceof ASTRelationalExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            final String image = javaNode.getImage();
+            stringBuilder.append(image);
+            toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTAdditiveExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             final String image = javaNode.getImage();
             stringBuilder.append(image);
@@ -141,12 +146,15 @@ public class DupIfRule extends AbstractJavaRule {
         }
     }
 
-    private void addViolation(final JavaNode node, final Object data, final List<JavaNode> astExpressions,
-            final String image) {
+    private void addViolation(final JavaNode node, final Object data, final List<JavaNode> javaNodes,
+            final String expressionString) {
         final String lines = StringUtils
-                .join(astExpressions.stream().map(Node::getBeginLine).collect(Collectors.toList()), ",");
-        addViolation(data, node, new String[] {image,
+                .join(javaNodes.stream().map(this::lineAndColumn).collect(Collectors.toList()), ",");
+        addViolation(data, node, new String[] {expressionString,
                 lines });
     }
 
+    private String lineAndColumn(JavaNode javaNode) {
+        return javaNode.getBeginLine() + ":" + javaNode.getBeginColumn();
+    }
 }

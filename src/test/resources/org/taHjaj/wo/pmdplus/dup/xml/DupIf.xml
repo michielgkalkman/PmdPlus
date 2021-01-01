@@ -2,6 +2,29 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(4) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate expression f()+7 found in lines 8:13,9:28</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( f() + 7) {
+           x = doSomething(f() + 7);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (1) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>

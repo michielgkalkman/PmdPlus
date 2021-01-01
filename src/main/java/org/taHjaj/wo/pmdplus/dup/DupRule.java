@@ -1,6 +1,7 @@
 package org.taHjaj.wo.pmdplus.dup;
 
 import net.sourceforge.pmd.RuleContext;
+import net.sourceforge.pmd.lang.ast.AbstractNode;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.java.ast.*;
 import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
@@ -24,7 +25,7 @@ public class DupRule extends AbstractJavaRule {
 	public Object visit(final ASTMethodDeclaration node, final Object data) {
 		try {
 
-			final Map<String, List<ASTName>> image2LinesNummbers = new HashMap<String, List<ASTName>>();
+			final Map<String, List<ASTName>> image2LinesNummbers = new HashMap<>();
 
 			final List<ASTName> astNames = node
 					.findDescendantsOfType(ASTName.class);
@@ -42,22 +43,18 @@ public class DupRule extends AbstractJavaRule {
 					final ASTPrimaryExpression astPrimaryExpression = (ASTPrimaryExpression) astName
 							.getNthParent(2);
 
-					List arguments = astPrimaryExpression
+					List<Node> arguments = astPrimaryExpression
 							.findChildNodesWithXPath("PrimarySuffix/Arguments");
 
 					if (!arguments.isEmpty()) {
 						final ASTArguments astArguments = (ASTArguments) arguments
 								.get(0);
 
-						if (astArguments.getArgumentCount() == 0) {
-							List<ASTName> list = image2LinesNummbers.get(image);
+						if (astArguments.size() == 0) {
+                            List<ASTName> list = image2LinesNummbers.computeIfAbsent(image,
+                                    k -> new ArrayList<>());
 
-							if (list == null) {
-								list = new ArrayList<ASTName>();
-								image2LinesNummbers.put(image, list);
-							}
-
-							list.add(astName);
+                            list.add(astName);
 						}
 					}
 				}
@@ -102,9 +99,9 @@ public class DupRule extends AbstractJavaRule {
                         try {
                             Field field = null;
                             final Field[] fields = type.getFields();
-                            for( int i=0; i<fields.length; i++) {
-                                if(split[s].equals(fields[i].getName())) {
-                                    field = fields[i];
+                            for (Field value : fields) {
+                                if (split[s].equals(value.getName())) {
+                                    field = value;
                                     break;
                                 }
                             }
@@ -114,10 +111,10 @@ public class DupRule extends AbstractJavaRule {
                             } else {
                                 Method method = null;
                                 final Method[] methods = type.getMethods();
-                                
-                                for( int j=0; j<methods.length; j++) {
-                                    if( split[s].equals(methods[j].getName())) {
-                                        method = methods[j];
+
+                                for (Method value : methods) {
+                                    if (split[s].equals(value.getName())) {
+                                        method = value;
                                         break;
                                     }
                                 }
@@ -158,18 +155,9 @@ public class DupRule extends AbstractJavaRule {
     private void addViolation(final ASTMethodDeclaration node, final Object data, final List<ASTName> astNames,
             final String image) {
         final String lines = StringUtils
-                .join(astNames.stream().map( a -> a.getBeginLine()).collect(Collectors.toList()), ",");
+                .join(astNames.stream().map(AbstractNode::getBeginLine).collect(Collectors.toList()), ",");
         addViolation(data, node, new String[] {image,
                 lines });
     }
 
-	private void dump(final AbstractJavaTypeNode node) {
-		final StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder
-				.append(node.getClass().getSimpleName())
-				.append("=================================================================\nScope:")
-				.append(node.getScope()).append("\nImage:")
-				.append(node.getImage()).append("\n");
-		System.out.println(stringBuilder);
-	}
 }

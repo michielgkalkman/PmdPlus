@@ -7,26 +7,25 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jmh.version>1.25.2</jmh.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-java</artifactId>
-			<version>6.4.0</version>
+			<version>6.30.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-core</artifactId>
-			<version>6.4.0</version>
+			<version>6.30.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-test</artifactId>
-			<version>6.4.0</version>
+			<version>6.30.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -44,45 +43,19 @@
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.11.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>${jmh.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>${jmh.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.spf4j/spf4j-jmh -->
-		<dependency>
-			<groupId>org.spf4j</groupId>
-			<artifactId>spf4j-jmh</artifactId>
-			<version>8.8.5</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.spf4j/spf4j-core -->
-		<dependency>
-			<groupId>org.spf4j</groupId>
-			<artifactId>spf4j-core</artifactId>
-			<version>8.8.5</version>
+			<version>3.18.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.4</version>
+			<version>1.18.16</version>
 		</dependency>
 	</dependencies>
 
@@ -95,28 +68,6 @@
 					<source>11</source>
 					<target>11</target>
 				</configuration>
-				<executions>
-					<execution>
-						<id>process-test-annotations</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<proc>only</proc>
-							<annotationProcessors>
-								<annotationProcessor>org.openjdk.jmh.generators.BenchmarkProcessor</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.openjdk.jmh</groupId>
-						<artifactId>jmh-generator-annprocess</artifactId>
-						<version>${jmh.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>

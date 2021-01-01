@@ -13,10 +13,7 @@ import org.jaxen.expr.RelationalExpr;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -25,30 +22,74 @@ public class DupIfRule extends AbstractJavaRule {
     public Object visit(ASTIfStatement node, Object data) {
 
         // Determine the expression in the if statement.
+        // Determine the expressions in the branches
         ASTExpression ifExpression = null;
-
+        Map<Node, List<ASTExpression>> ifExpressions = new HashMap<>();
+        Map<Node, List<ASTExpression>> branchExpressions = new HashMap<>();
 
         for( final Node childNode : node.children() ) {
             if( childNode instanceof ASTExpression) {
                 ifExpression = (ASTExpression) childNode;
-                break;
+                final List<ASTExpression> astExpressionList = childNode
+                        .findDescendantsOfType(ASTExpression.class);
+                astExpressionList.add(ifExpression);
+                ifExpressions.put(childNode, astExpressionList);
+            } else {
+                final List<ASTExpression> astExpressionList = childNode
+                        .findDescendantsOfType(ASTExpression.class);
+                branchExpressions.put( childNode, astExpressionList);
             }
         }
-        
-        final List<ASTExpression> astExpressionList = node
+
+        // Now check if there is any expression in the branches that is compatible
+        // with the ifExpression
+
+        boolean fFound = false;
+
+
+        reportDuplicates(ifExpressions, branchExpressions, data);
+
+        final List<ASTExpression> astExpressionList = node.getChild(1)
                 .findDescendantsOfType(ASTExpression.class);
 
-
-
         for (final ASTExpression astExpression : astExpressionList) {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            toString(stringBuilder, astExpression);
-
-            System.out.printf( "Image: %s%n", stringBuilder);
+            final String s = toString(astExpression);
+            System.out.printf( "Image: %s%n", s);
         }
 
+        // Check if there is overlap between the ifExpression and any of the other expressions
+
+
         return super.visit(node, data);
+    }
+
+    private void reportDuplicates(
+            Map<Node, List<ASTExpression>> ifExpressions,
+            Map<Node, List<ASTExpression>> branchExpressions, Object data) {
+        ifExpressions.entrySet().forEach(ifExpression -> {
+            for( ASTExpression ifE : ifExpression.getValue()) {
+                branchExpressions.entrySet().stream().flatMap(e -> e.getValue().stream()).forEach(statementExpression -> {
+                    final String ifExpressionString = toString(ifE);
+                    final String statementExpressionString = toString(statementExpression);
+                    System.out.printf("Compare %s with %s%n", ifExpressionString, statementExpressionString);
+                    if (ifExpressionString.equals(statementExpressionString)) {
+                        System.out.printf("Equal %s with %s%n", ifExpressionString, statementExpressionString);
+                        addViolation(ifE, data, Arrays.asList(ifE, statementExpression), ifE.getImage());
+                    } else {
+                        System.out.printf("Not equal %s with %s%n", ifExpressionString, statementExpressionString);
+                    }
+                });
+            }
+        });
+    }
+
+    private String toString(ASTExpression astExpression) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        toString(stringBuilder, astExpression);
+
+        final String s = stringBuilder.toString();
+        return s;
     }
 
     private void toString(StringBuilder stringBuilder, JavaNode javaNode) {
@@ -58,6 +99,12 @@ public class DupIfRule extends AbstractJavaRule {
             final String image = javaNode.getImage();
             stringBuilder.append(image);
             toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTArgumentList) {
+            stringBuilder.append("(");
+            for (JavaNode child : javaNode.children()) {
+                toString(stringBuilder, child);
+            }
+            stringBuilder.append(")");
         } else {
             final int numChildren = javaNode.getNumChildren();
             if (numChildren > 0) {
@@ -79,141 +126,11 @@ public class DupIfRule extends AbstractJavaRule {
         }
     }
 
-    @Override
-	public Object visit(final ASTMethodDeclaration node, final Object data) {
-		try {
 
-			final Map<String, List<ASTName>> image2LinesNummbers = new HashMap<>();
-
-			final List<ASTName> astNames = node
-					.findDescendantsOfType(ASTName.class);
-
-			for (final ASTName astName : astNames) {
-				final String image = astName.getImage();
-
-				final Node parent = astName.getNthParent(1);
-				final Node grandParent = astName.getNthParent(2);
-
-				if (!(parent instanceof ASTNameList)
-						&& !(grandParent instanceof ASTAnnotation)
-						&& !(parent instanceof ASTMarkerAnnotation)) {
-
-					final ASTPrimaryExpression astPrimaryExpression = (ASTPrimaryExpression) astName
-							.getNthParent(2);
-
-					List<Node> arguments = astPrimaryExpression
-							.findChildNodesWithXPath("PrimarySuffix/Arguments");
-
-					if (!arguments.isEmpty()) {
-						final ASTArguments astArguments = (ASTArguments) arguments
-								.get(0);
-
-						if (astArguments.size() == 0) {
-                            List<ASTName> list = image2LinesNummbers.computeIfAbsent(image,
-                                    k -> new ArrayList<>());
-
-                            list.add(astName);
-						}
-					}
-				}
-			}
-
-			processImages(node, data, image2LinesNummbers);
-		} catch (final JaxenException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (final ClassCastException e1) {
-			final String x = ((RuleContext) data).getSourceCodeFilename() + ":"
-					+ node.getBeginLine();
-
-			throw new RuntimeException(x, e1);
-		}
-
-		return super.visit(node, data);
-	}
-
-    private void processImages(final ASTMethodDeclaration node, final Object data,
-            final Map<String, List<ASTName>> image2LinesNummbers) {
-        for (final Entry<String, List<ASTName>> entry : image2LinesNummbers
-        		.entrySet()) {
-        	final List<ASTName> astNames = entry.getValue();
-        	if (astNames.size() > 1) {
-                final String image = entry.getKey();
-
-                // Check if image is actually a void method:
-                
-        	    final ASTName astName = astNames.get(0);
-
-
-                final JavaTypeDefinition typeDefinition = astName.getTypeDefinition();
-                if (typeDefinition != null && typeDefinition.isExactType()) {
-                    final String[] split = StringUtils.split( image, '.');
-                    
-                    Class<?> type = typeDefinition.getType();
-                    
-                    boolean fVoid = false;
-                    
-                    for( int s=1; s<split.length; s++) {
-                        try {
-                            Field field = null;
-                            final Field[] fields = type.getFields();
-                            for (Field value : fields) {
-                                if (split[s].equals(value.getName())) {
-                                    field = value;
-                                    break;
-                                }
-                            }
-                            
-                            if( field != null) {
-                                type = field.getType();
-                            } else {
-                                Method method = null;
-                                final Method[] methods = type.getMethods();
-
-                                for (Method value : methods) {
-                                    if (split[s].equals(value.getName())) {
-                                        method = value;
-                                        break;
-                                    }
-                                }
-                                
-                                if( method != null) {
-                                    if( "void".equals(method.getReturnType().getTypeName())) {
-                                        fVoid = true;
-                                    }
-                                }
-                            }
-                        } catch (SecurityException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                    
-                    if( !fVoid) {
-                        addViolation(node, data, astNames, image);
-                    }
-                } else {
-                    final NameDeclaration nameDeclaration = astName.getNameDeclaration();
-                    if (nameDeclaration != null) {
-                        try {
-                        if( !nameDeclaration.getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(ASTResultType.class).get(0).isVoid()) {
-                            addViolation(node, data, astNames, image);
-                        }
-                        } catch( Throwable throwable) {
-                            System.err.println( astName.getBeginLine());
-                        }
-                    } else {
-                        addViolation(node, data, astNames, image);
-                    }
-                }
-        	}
-        }
-    }
-
-    private void addViolation(final ASTMethodDeclaration node, final Object data, final List<ASTName> astNames,
+    private void addViolation(final ASTExpression node, final Object data, final List<ASTExpression> astExpressions,
             final String image) {
         final String lines = StringUtils
-                .join(astNames.stream().map(AbstractNode::getBeginLine).collect(Collectors.toList()), ",");
+                .join(astExpressions.stream().map(AbstractNode::getBeginLine).collect(Collectors.toList()), ",");
         addViolation(data, node, new String[] {image,
                 lines });
     }

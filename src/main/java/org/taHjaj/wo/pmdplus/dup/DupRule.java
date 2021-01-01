@@ -21,34 +21,6 @@ import java.util.stream.Collectors;
 
 public class DupRule extends AbstractJavaRule {
     @Override
-    public Object visit(ASTIfStatement node, Object data) {
-
-        // Determine the expression in the if statement.
-        ASTExpression ifExpression = null;
-
-
-        for( final Node childNode : node.children() ) {
-            if( childNode instanceof ASTExpression) {
-                ifExpression = (ASTExpression) childNode;
-                break;
-            }
-        }
-
-        final List<ASTExpression> astExpressionList = node
-                .findDescendantsOfType(ASTExpression.class);
-
-
-
-        for (final ASTExpression astExpression : astExpressionList) {
-            final String image = astExpression.getImage();
-
-            System.out.printf( "Image: %s%n", image.toString());
-        }
-
-        return super.visit(node, data);
-    }
-
-    @Override
 	public Object visit(final ASTMethodDeclaration node, final Object data) {
 		try {
 

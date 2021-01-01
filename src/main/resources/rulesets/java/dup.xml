@@ -12,7 +12,7 @@ The Dup Code ruleset contains rules that find
     <rule name="DupIf"
           language="java"
           since="0.1"
-          message="Duplicate expression {0} found in lines {1}"
+          message="Duplicate if-expression {0} found in lines {1}"
           class="org.taHjaj.wo.pmdplus.dup.DupIfRule"
           externalInfoUrl="https://github.com/michielgkalkman/PmdPlus">
     <description>

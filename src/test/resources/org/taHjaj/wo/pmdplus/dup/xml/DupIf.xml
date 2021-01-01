@@ -6,7 +6,7 @@
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate expression f()+7 found in lines 8:13,9:28</message>
+            <message>Duplicate if-expression f()+7 found in lines 8:13,9:28</message>
         </expected-messages>
         <code><![CDATA[
 import java.util.ArrayList;

@@ -20,13 +20,13 @@ public class DupIfRule extends AbstractJavaRule {
 
 
         ifExpression = node.getChild(0);
-        ifExpressions = findAllExpressions(ifExpression);
+        ifExpressions = findAllRewritableExpressions(ifExpression);
 
         ifExpressions.forEach(javaNode -> System.out.printf( "ifExpression: %s%n", toString(javaNode)));
 
         for( int i=1; i<node.getNumChildren(); i++) {
             final JavaNode childNode = node.getChild(i);
-            final List<JavaNode> astExpressionList = findAllExpressions(childNode);
+            final List<JavaNode> astExpressionList = findAllRewritableExpressions(childNode);
             branchExpressions.put( childNode, astExpressionList);
         }
 
@@ -50,7 +50,33 @@ public class DupIfRule extends AbstractJavaRule {
         return super.visit(node, data);
     }
 
-    private List<JavaNode> findAllExpressions(JavaNode node) {
+    private List<JavaNode> findAllRewritableExpressions(JavaNode node) {
+        final List<JavaNode> javaNodes = finalAllExpressions(node);
+
+        return javaNodes.stream().filter(this::isRewritable).collect(Collectors.toList());
+    }
+
+    private boolean isRewritable(JavaNode javaNode) {
+        if( javaNode.getNumChildren() == 1) {
+            // PrimaryExpression
+            final JavaNode primaryExpression = javaNode.getChild(0);
+            if(primaryExpression instanceof ASTPrimaryExpression && primaryExpression.getNumChildren() == 1) {
+                // PrimaryPrefix
+                final JavaNode primaryPrefix = primaryExpression.getChild(0);
+                if( primaryPrefix instanceof  ASTPrimaryPrefix && primaryPrefix.getNumChildren() == 1) {
+                    // Name
+                    final JavaNode name = primaryPrefix.getChild(0);
+                    if( name instanceof ASTName) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private List<JavaNode> finalAllExpressions(JavaNode node) {
         final List<JavaNode> astExpressionList = node
                 .findDescendantsOfType(ASTExpression.class);
 
@@ -58,18 +84,18 @@ public class DupIfRule extends AbstractJavaRule {
                 node.findDescendantsOfType(ASTRelationalExpression.class);
 
         for( ASTRelationalExpression astRelationalExpression : astRelationalExpressions) {
-            astExpressionList.addAll(findAllExpressions(astRelationalExpression.getChild(0)));
-            astExpressionList.addAll(findAllExpressions(astRelationalExpression.getChild(1)));
+            astExpressionList.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(0)));
+            astExpressionList.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(1)));
         }
 
         if(isExpression(node)) {
-            astExpressionList.add( node);
+            astExpressionList.add(node);
         } else if( node instanceof ASTPrimaryExpression) {
             if( node.getNumChildren() == 2
                     && node.getChild(0) instanceof ASTPrimaryPrefix
                     && node.getChild(1) instanceof ASTPrimarySuffix) {
                 astExpressionList.add(node);
-                astExpressionList.addAll(findAllExpressions(node.getChild(1)));
+                astExpressionList.addAll(findAllRewritableExpressions(node.getChild(1)));
             }
 
         }

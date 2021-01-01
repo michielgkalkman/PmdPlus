@@ -9,6 +9,7 @@ import net.sourceforge.pmd.lang.java.typeresolution.typedefinition.JavaTypeDefin
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 import org.apache.commons.lang3.StringUtils;
 import org.jaxen.JaxenException;
+import org.jaxen.expr.RelationalExpr;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class DupRule extends AbstractJavaRule {
+public class DupIfRule extends AbstractJavaRule {
     @Override
     public Object visit(ASTIfStatement node, Object data) {
 
@@ -33,19 +34,49 @@ public class DupRule extends AbstractJavaRule {
                 break;
             }
         }
-
+        
         final List<ASTExpression> astExpressionList = node
                 .findDescendantsOfType(ASTExpression.class);
 
 
 
         for (final ASTExpression astExpression : astExpressionList) {
-            final String image = astExpression.getImage();
+            StringBuilder stringBuilder = new StringBuilder();
 
-            System.out.printf( "Image: %s%n", image.toString());
+            toString(stringBuilder, astExpression);
+
+            System.out.printf( "Image: %s%n", stringBuilder);
         }
 
         return super.visit(node, data);
+    }
+
+    private void toString(StringBuilder stringBuilder, JavaNode javaNode) {
+
+        if( javaNode instanceof ASTRelationalExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            final String image = javaNode.getImage();
+            stringBuilder.append(image);
+            toString(stringBuilder, javaNode.getChild(1));
+        } else {
+            final int numChildren = javaNode.getNumChildren();
+            if (numChildren > 0) {
+                for (JavaNode child : javaNode.children()) {
+                    toString(stringBuilder, child);
+                }
+            } else {
+                final String image = javaNode.getImage();
+                if (image == null) {
+                    if (javaNode instanceof ASTArguments) {
+                        stringBuilder.append("()");
+                    } else {
+                        stringBuilder.append("unkonwn javaNode ").append(javaNode.getClass().getTypeName());
+                    }
+                } else {
+                    stringBuilder.append(image);
+                }
+            }
+        }
     }
 
     @Override
@@ -165,7 +196,7 @@ public class DupRule extends AbstractJavaRule {
                     final NameDeclaration nameDeclaration = astName.getNameDeclaration();
                     if (nameDeclaration != null) {
                         try {
-                        if( !nameDeclaration.getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(net.sourceforge.pmd.lang.java.ast.ASTResultType.class).get(0).isVoid()) {
+                        if( !nameDeclaration.getNode().getFirstParentOfType(ASTMethodDeclaration.class).findChildrenOfType(ASTResultType.class).get(0).isVoid()) {
                             addViolation(node, data, astNames, image);
                         }
                         } catch( Throwable throwable) {

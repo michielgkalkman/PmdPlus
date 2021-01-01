@@ -1,14 +1,25 @@
 <?xml version="1.0"?>
 
-<ruleset name="Empty Code"
+<ruleset name="Dup Code"
     xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
   <description>
-The Empty Code ruleset contains rules that find empty statements of any kind (empty method,
-empty block statement, empty try or catch block,...).
+The Dup Code ruleset contains rules that find
+      duplicate expressions in code. A bit like cpd but more local and more with semantics
   </description>
 
+    <rule name="DupIf"
+          language="java"
+          since="0.1"
+          message="Duplicate expression {0} found in lines {1}"
+          class="org.taHjaj.wo.pmdplus.dup.DupIfRule"
+          externalInfoUrl="https://github.com/michielgkalkman/PmdPlus">
+    <description>
+        Dup finds duplicate expressions in code. A bit like cpd but more local and more with semantics
+    </description>
+    <priority>3</priority>
+</rule>
  <rule name="Dup"
   		  language="java"
   	  	  since="0.1"
@@ -19,8 +30,6 @@ empty block statement, empty try or catch block,...).
 Dup finds duplicate expressions in code. A bit like cpd but more local and more with semantics
       </description>
       <priority>3</priority>
-      <properties>
-      </properties>
       <example>
   <![CDATA[
 /*

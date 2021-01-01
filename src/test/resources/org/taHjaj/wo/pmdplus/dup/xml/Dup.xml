@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
-<!--    <test-code>-->
-<!--        <description><![CDATA[-->
-<!--common expressions can be moved outside the if statement-->
-<!--        ]]></description>-->
-<!--        <expected-problems>1</expected-problems>-->
-<!--        <code><![CDATA[-->
-<!--import java.util.ArrayList;-->
-<!--import java.util.List;-->
-
-<!--public class PmdPlusTest {-->
-<!--    private int x = 0;-->
-
-<!--    public int p(int i) {-->
-<!--       return i;-->
-<!--    }-->
-
-<!--    public void test() {-->
-<!--        if( 2 < 3) {-->
-<!--           x = p(2);-->
-<!--         } else {-->
-<!--           x = p(2);-->
-<!--         }-->
-<!--    }-->
-<!--}-->
-<!--     ]]></code>-->
-<!--    </test-code>-->
    <test-code>
         <description><![CDATA[
        	Test with implicit this. 

@@ -65,8 +65,8 @@ public class DupIfRule extends AbstractJavaRule {
                 final JavaNode primaryPrefix = primaryExpression.getChild(0);
                 if( primaryPrefix instanceof  ASTPrimaryPrefix && primaryPrefix.getNumChildren() == 1) {
                     // Name
-                    final JavaNode name = primaryPrefix.getChild(0);
-                    if( name instanceof ASTName) {
+                    final JavaNode branchJavaNode = primaryPrefix.getChild(0);
+                    if( branchJavaNode instanceof ASTName || branchJavaNode instanceof ASTLiteral) {
                         return false;
                     }
                 }

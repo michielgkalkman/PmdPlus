@@ -2,7 +2,7 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
-common expressions can be moved outside the if statement
+(1) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[
@@ -22,7 +22,7 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
-common expressions can be moved outside the if statement
+(2) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[
@@ -42,7 +42,7 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
-common expressions can be moved outside the if statement
+(3) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[

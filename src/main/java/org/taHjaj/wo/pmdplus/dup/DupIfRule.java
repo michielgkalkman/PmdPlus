@@ -15,12 +15,12 @@ public class DupIfRule extends AbstractJavaRule {
         // Determine the expression in the if statement.
         // Determine the expressions in the branches
         JavaNode ifExpression;
-        List<JavaNode> ifExpressions = new ArrayList<>();
+
         Map<Node, List<JavaNode>> branchExpressions = new HashMap<>();
 
 
         ifExpression = node.getChild(0);
-        ifExpressions = findAllRewritableExpressions(ifExpression);
+        List<JavaNode> ifExpressions = findAllRewritableExpressions(ifExpression);
 
         ifExpressions.forEach(javaNode -> System.out.printf( "ifExpression: %s%n", toString(javaNode)));
 
@@ -66,9 +66,7 @@ public class DupIfRule extends AbstractJavaRule {
                 if( primaryPrefix instanceof  ASTPrimaryPrefix && primaryPrefix.getNumChildren() == 1) {
                     // Name
                     final JavaNode branchJavaNode = primaryPrefix.getChild(0);
-                    if( branchJavaNode instanceof ASTName || branchJavaNode instanceof ASTLiteral) {
-                        return false;
-                    }
+                    return !(branchJavaNode instanceof ASTName) && !(branchJavaNode instanceof ASTLiteral);
                 }
             }
         }
@@ -106,7 +104,10 @@ public class DupIfRule extends AbstractJavaRule {
 
 
         return node instanceof ASTExpression
-                || node instanceof ASTAdditiveExpression;
+                || node instanceof ASTAdditiveExpression
+                || node instanceof ASTConditionalAndExpression
+                || node instanceof ASTConditionalOrExpression
+                || node instanceof ASTAndExpression;
     }
 
     private void reportDuplicates(
@@ -141,6 +142,19 @@ public class DupIfRule extends AbstractJavaRule {
             stringBuilder.append(image);
             toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTAdditiveExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            final String image = javaNode.getImage();
+            stringBuilder.append(image);
+            toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTConditionalAndExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append("&&");
+            toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTConditionalOrExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append("||");
+            toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTAndExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             final String image = javaNode.getImage();
             stringBuilder.append(image);

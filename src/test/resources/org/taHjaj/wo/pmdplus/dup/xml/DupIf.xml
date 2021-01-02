@@ -2,6 +2,48 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(9) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression x||y found in lines 6:15,7:28</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if( a(x || y)) {
+           x = doSomething(x || y);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(8) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression x&amp;&amp;y found in lines 6:15,7:28</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if( a(x && y)) {
+           x = doSomething(x && y);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (7) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>0</expected-problems>

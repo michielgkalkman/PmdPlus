@@ -14,21 +14,22 @@ public class DupIfRule extends AbstractJavaRule {
 
         // Determine the expression in the if statement.
         // Determine the expressions in the branches
-        JavaNode ifExpression;
-
-        Map<Node, List<JavaNode>> branchExpressions = new HashMap<>();
-
-
-        ifExpression = node.getChild(0);
+        JavaNode ifExpression = node.getChild(0);
         List<JavaNode> ifExpressions = findAllRewritableExpressions(ifExpression);
 
         ifExpressions.forEach(javaNode -> System.out.printf( "ifExpression: %s%n", toString(javaNode)));
+
+        Map<Node, List<JavaNode>> branchExpressions = new HashMap<>();
 
         for( int i=1; i<node.getNumChildren(); i++) {
             final JavaNode childNode = node.getChild(i);
             final List<JavaNode> astExpressionList = findAllRewritableExpressions(childNode);
             branchExpressions.put( childNode, astExpressionList);
         }
+
+        branchExpressions.values().forEach( expressions -> expressions.forEach(expression ->
+                System.out.printf( "branchExpression: %s%n", toString(expression))));
+
 
         // Now check if there is any expression in the branches that is compatible
         // with the ifExpression
@@ -51,7 +52,7 @@ public class DupIfRule extends AbstractJavaRule {
     }
 
     private List<JavaNode> findAllRewritableExpressions(JavaNode node) {
-        final List<JavaNode> javaNodes = finalAllExpressions(node);
+        final List<JavaNode> javaNodes = findAllExpressions(node);
 
         return javaNodes.stream().filter(this::isRewritable).collect(Collectors.toList());
     }
@@ -74,7 +75,7 @@ public class DupIfRule extends AbstractJavaRule {
         return true;
     }
 
-    private List<JavaNode> finalAllExpressions(JavaNode node) {
+    private List<JavaNode> findAllExpressions(JavaNode node) {
         final List<JavaNode> astExpressionList = node
                 .findDescendantsOfType(ASTExpression.class);
 
@@ -126,17 +127,27 @@ public class DupIfRule extends AbstractJavaRule {
         }));
     }
 
-    private String toString(JavaNode astExpression) {
+    private String toString(JavaNode javaNode) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        toString(stringBuilder, astExpression);
+        toString(stringBuilder, javaNode.getChild(0));
+
+        if( javaNode.getNumChildren() > 1) {
+            for( int i=1; i<javaNode.getNumChildren(); i++) {
+                toString(stringBuilder, javaNode.getChild(i));
+            }
+        }
 
         return stringBuilder.toString();
     }
 
     private void toString(StringBuilder stringBuilder, JavaNode javaNode) {
 
-        if( javaNode instanceof ASTRelationalExpression) {
+        if( javaNode instanceof ASTExpression) {
+            stringBuilder.append('(');
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append(')');
+        } else if( javaNode instanceof ASTRelationalExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             final String image = javaNode.getImage();
             stringBuilder.append(image);
@@ -160,11 +171,9 @@ public class DupIfRule extends AbstractJavaRule {
             stringBuilder.append(image);
             toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTArgumentList) {
-            stringBuilder.append("(");
             for (JavaNode child : javaNode.children()) {
                 toString(stringBuilder, child);
             }
-            stringBuilder.append(")");
         } else {
             final int numChildren = javaNode.getNumChildren();
             if (numChildren > 0) {

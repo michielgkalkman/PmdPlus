@@ -1,5 +1,7 @@
 package org.taHjaj.wo.pmdplus.dup;
 
+import net.sourceforge.pmd.RuleContext;
+import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.java.ast.*;
 import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
@@ -9,6 +11,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DupIfRule extends AbstractJavaRule {
+
+    private Set<String> violatingExpressions = new HashSet<>();
+
+    @Override
+    public Object visit(final ASTMethodDeclaration node, final Object data) {
+
+        final List<JavaNode> expressions = findAllRewritableExpressions(node.getBody());
+
+        reportDuplicates( data, node, expressions);
+        
+        return super.visit(node, data);
+    }
+
     @Override
     public Object visit(ASTIfStatement node, Object data) {
 
@@ -17,9 +32,10 @@ public class DupIfRule extends AbstractJavaRule {
         JavaNode ifExpression = node.getChild(0);
         List<JavaNode> ifExpressions = findAllRewritableExpressions(ifExpression);
 
-        ifExpressions.forEach(javaNode -> System.out.printf( "ifExpression: %s%n", toString(javaNode)));
+        System.out.printf( "Expression %s contains the following expressions:%n", toString(ifExpression));
+        ifExpressions.forEach(javaNode -> System.out.printf( "::: %s%n", toString(javaNode)));
 
-        Map<Node, List<JavaNode>> branchExpressions = new HashMap<>();
+        Map<JavaNode, List<JavaNode>> branchExpressions = new HashMap<>();
 
         for( int i=1; i<node.getNumChildren(); i++) {
             final JavaNode childNode = node.getChild(i);
@@ -27,8 +43,11 @@ public class DupIfRule extends AbstractJavaRule {
             branchExpressions.put( childNode, astExpressionList);
         }
 
-        branchExpressions.values().forEach( expressions -> expressions.forEach(expression ->
-                System.out.printf( "branchExpression: %s%n", toString(expression))));
+        branchExpressions.forEach((key, value) -> {
+            System.out.printf("Branch %s contains the following expressions:%n", toString(key.getParent().getChild(0)));
+            value.forEach(expression ->
+                    System.out.printf("branchExpression: %s%n", toString(expression)));
+        });
 
 
         // Now check if there is any expression in the branches that is compatible
@@ -36,17 +55,6 @@ public class DupIfRule extends AbstractJavaRule {
 
 
         reportDuplicates(ifExpressions, branchExpressions, data);
-
-        final List<ASTExpression> astExpressionList = node.getChild(1)
-                .findDescendantsOfType(ASTExpression.class);
-
-        for (final ASTExpression astExpression : astExpressionList) {
-            final String s = toString(astExpression);
-            System.out.printf( "Image: %s%n", s);
-        }
-
-        // Check if there is overlap between the ifExpression and any of the other expressions
-
 
         return super.visit(node, data);
     }
@@ -111,9 +119,42 @@ public class DupIfRule extends AbstractJavaRule {
                 || node instanceof ASTAndExpression;
     }
 
+
     private void reportDuplicates(
             List<JavaNode> ifExpressions,
-            Map<Node, List<JavaNode>> branchExpressions, Object data) {
+            Map<JavaNode, List<JavaNode>> branchExpressions, Object data) {
+        reportDuplicatesOnIfStatement(ifExpressions, branchExpressions, data);
+
+        branchExpressions.forEach((key, value1) -> {
+            reportDuplicates(data, key, value1);
+        });
+    }
+
+    private void reportDuplicates(Object data, JavaNode key, List<JavaNode> value1) {
+        Map<String, List<JavaNode>> frequency = new HashMap<>();
+
+        value1.forEach(javaNode -> {
+            String value = toString(javaNode);
+
+            frequency.compute(value, (k, v) -> {
+                if (v == null) {
+                    v = new ArrayList<>();
+                }
+
+                v.add(javaNode);
+
+                return v;
+            });
+        });
+
+        frequency.forEach((key1, value2) -> {
+            if (value2.size() > 1) {
+                addViolation(key, data, value2, key1);
+            }
+        });
+    }
+
+    private void reportDuplicatesOnIfStatement(List<JavaNode> ifExpressions, Map<JavaNode, List<JavaNode>> branchExpressions, Object data) {
         ifExpressions.forEach(ifE -> branchExpressions.entrySet().stream().flatMap(e -> e.getValue().stream()).forEach(statementExpression -> {
             final String ifExpressionString = toString(ifE);
             final String statementExpressionString = toString(statementExpression);
@@ -195,12 +236,34 @@ public class DupIfRule extends AbstractJavaRule {
         }
     }
 
-    private void addViolation(final JavaNode node, final Object data, final List<JavaNode> javaNodes,
+    private void addViolation(final JavaNode javaNode, final Object data, final List<JavaNode> javaNodes,
             final String expressionString) {
-        final String lines = StringUtils
-                .join(javaNodes.stream().map(this::lineAndColumn).collect(Collectors.toList()), ",");
-        addViolation(data, node, new String[] {expressionString,
-                lines });
+        if( ! violatingExpressions.contains( expressionString)) {
+            violatingExpressions.add( expressionString);
+            javaNodes.sort((javaNode1, javaNode2) -> {
+                final int beginLine1 = javaNode1.getBeginLine();
+                final int beginLine2 = javaNode2.getBeginLine();
+                if( beginLine1 < beginLine2) {
+                    return -1;
+                } else if ( beginLine1 == beginLine2) {
+                    final int beginColumn1 = javaNode1.getBeginColumn();
+                    final int beginColumn2 = javaNode2.getBeginColumn();
+                    if( beginColumn1 < beginColumn2) {
+                        return -1;
+                    } else if ( beginColumn1 == beginColumn2) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    return 1;
+                }
+            });
+            final String lines = StringUtils
+                    .join(javaNodes.stream().map(this::lineAndColumn).collect(Collectors.toList()), ",");
+            addViolation(data, javaNode, new String[]{expressionString,
+                    lines});
+        }
     }
 
     private String lineAndColumn(JavaNode javaNode) {

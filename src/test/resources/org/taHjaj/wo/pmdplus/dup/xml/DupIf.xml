@@ -2,6 +2,32 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(11) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>2</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression a() found in lines 8:13,9:21</message>
+            <message>Duplicate if-expression f() found in lines 8:19,10:32</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() < f()) {
+            if( 3 < a()) {
+               x = doSomething(f());
+           }
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (1) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>

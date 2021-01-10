@@ -2,6 +2,56 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(16) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() > 2) {
+           x = doSomething(f());
+        } else {
+            if(b() > 2) {
+               y = doAnotherThing(f());
+            }
+        }
+        if(c() > 2) {
+           y = doAnotherThing(f());
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+    <description><![CDATA[
+(15) common expressions can be moved outside the if statement
+        ]]></description>
+    <expected-problems>0</expected-problems>
+    <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() > 2) {
+           x = doSomething(f());
+        }
+        if(b() > 2) {
+           y = doAnotherThing(f());
+        }
+    }
+}
+     ]]></code>
+</test-code>
+    <test-code>
+        <description><![CDATA[
 (14) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>

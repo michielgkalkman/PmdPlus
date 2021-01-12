@@ -2,9 +2,13 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
-(16) common expressions can be moved outside the if statement
+(11) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
-        <expected-problems>0</expected-problems>
+        <expected-problems>2</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression a() found in lines 8:13,9:21</message>
+            <message>Duplicate if-expression f() found in lines 8:19,10:32</message>
+        </expected-messages>
         <code><![CDATA[
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +17,42 @@ public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
     public void test() {
-        if( a() > 2) {
-           x = doSomething(f());
-        } else {
-            if(b() > 2) {
-               y = doAnotherThing(f());
-            }
-        }
-        if(c() > 2) {
-           y = doAnotherThing(f());
-        }
+        if( a() < f()) {
+            if( 3 < a()) {
+               x = doSomething(f());
+           }
+         }
     }
 }
      ]]></code>
     </test-code>
     <test-code>
-    <description><![CDATA[
+        <description><![CDATA[
+(10) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression x||y found in lines 6:17,7:28</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if( a( (x || y) && z)) {
+           x = doSomething(x || y);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (15) common expressions can be moved outside the if statement
         ]]></description>
-    <expected-problems>0</expected-problems>
-    <code><![CDATA[
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,28 +66,6 @@ public class CommonExpressionsInAllIfBranches {
         if(b() > 2) {
            y = doAnotherThing(f());
         }
-    }
-}
-     ]]></code>
-</test-code>
-    <test-code>
-        <description><![CDATA[
-(14) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression f() found in lines 8:24,9:27</message>
-        </expected-messages>
-        <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-       x = doSomething(f());
-       y = doAnotherThing(f());
     }
 }
      ]]></code>
@@ -98,12 +96,39 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
-(11) nested ifs: common expressions can be moved outside the if statement
+(16) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() > 2) {
+           x = doSomething(f());
+        } else {
+            if(b() > 2) {
+               y = doAnotherThing(f());
+            }
+        }
+        if(c() > 2) {
+           y = doAnotherThing(f());
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(17) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>2</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression a() found in lines 8:13,9:21</message>
-            <message>Duplicate if-expression f() found in lines 8:19,10:32</message>
+            <message>Duplicate if-expression a() found in lines 8:13,9:17</message>
+            <message>Duplicate if-expression a()&lt;3 found in lines 8:13,9:17</message>
         </expected-messages>
         <code><![CDATA[
 import java.util.ArrayList;
@@ -113,9 +138,8 @@ public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
     public void test() {
-        if( a() < f()) {
-            if( 3 < a()) {
-               x = doSomething(f());
+        if( a() < 3) {
+            if( a() < 3) {
            }
          }
     }
@@ -144,6 +168,28 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
+(14) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression f() found in lines 8:24,9:27</message>
+        </expected-messages>
+        <code><![CDATA[
+import java.util.ArrayList;
+import java.util.List;
+
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+       x = doSomething(f());
+       y = doAnotherThing(f());
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (8) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -158,27 +204,6 @@ public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(x && y)) {
            x = doSomething(x && y);
-         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(10) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression x||y found in lines 6:17,7:28</message>
-        </expected-messages>
-        <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
-public class CommonExpressionsInAllIfBranches {
-    public void test() {
-        if( a( (x || y) && z)) {
-           x = doSomething(x || y);
          }
     }
 }

@@ -346,6 +346,11 @@ public class DupIfRule extends AbstractJavaRule {
             final String image = javaNode.getImage();
             stringBuilder.append(image);
             toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTEqualityExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            final String image = javaNode.getImage();
+            stringBuilder.append(image);
+            toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTArgumentList) {
             for (JavaNode child : javaNode.children()) {
                 toString(stringBuilder, child);
@@ -366,6 +371,8 @@ public class DupIfRule extends AbstractJavaRule {
                 if (image == null) {
                     if (javaNode instanceof ASTArguments) {
                         stringBuilder.append("()");
+                    } else if (javaNode instanceof ASTNullLiteral) {
+                            stringBuilder.append("null");
                     } else {
                         stringBuilder.append("unkonwn javaNode ").append(javaNode.getClass().getTypeName());
                     }

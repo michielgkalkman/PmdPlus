@@ -2,13 +2,31 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(19) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression cmp==0 found in lines 4:13,5:17</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public void test() {
+        int cmp = Vector2D.COORDINATE_ASCENDING_ORDER.compare(start, other.start);
+        if (cmp == 0) {
+            if (cmp == 0) {
+                x();
+            }
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (18) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class EqualsExpression {
     public void test() {
         pt = getStartVertex();
@@ -25,13 +43,10 @@ public class EqualsExpression {
         ]]></description>
         <expected-problems>2</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression a() found in lines 8:13,9:21</message>
-            <message>Duplicate if-expression f() found in lines 8:19,10:32</message>
+            <message>Duplicate if-expression a() found in lines 5:13,6:21</message>
+            <message>Duplicate if-expression f() found in lines 5:19,7:32</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -51,12 +66,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression x||y found in lines 6:17,7:28</message>
+            <message>Duplicate if-expression x||y found in lines 3:17,4:28</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a( (x || y) && z)) {
@@ -72,9 +84,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -95,12 +104,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression f() found in lines 9:28,10:31</message>
+            <message>Duplicate if-expression f() found in lines 6:28,7:31</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -119,9 +125,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -146,13 +149,10 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>2</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression a() found in lines 8:13,9:17</message>
-            <message>Duplicate if-expression a()&lt;3 found in lines 8:13,9:17</message>
+            <message>Duplicate if-expression a() found in lines 5:13,6:17</message>
+            <message>Duplicate if-expression a()&lt;3 found in lines 5:13,6:17</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -171,9 +171,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -191,12 +188,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression f() found in lines 8:24,9:27</message>
+            <message>Duplicate if-expression f() found in lines 5:24,6:27</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -213,12 +207,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression x&amp;&amp;y found in lines 6:15,7:28</message>
+            <message>Duplicate if-expression x&amp;&amp;y found in lines 3:15,4:28</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(x && y)) {
@@ -234,12 +225,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression x||y found in lines 6:15,7:28</message>
+            <message>Duplicate if-expression x||y found in lines 3:15,4:28</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(x || y)) {
@@ -256,9 +244,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(true)) {
@@ -274,9 +259,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(0)) {
@@ -292,9 +274,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(f)) {
@@ -310,12 +289,9 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression f()+7 found in lines 8:13,9:28</message>
+            <message>Duplicate if-expression f()+7 found in lines 5:13,6:28</message>
         </expected-messages>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -333,9 +309,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 
@@ -353,9 +326,6 @@ public class CommonExpressionsInAllIfBranches {
         ]]></description>
         <expected-problems>1</expected-problems>
         <code><![CDATA[
-import java.util.ArrayList;
-import java.util.List;
-
 public class CommonExpressionsInAllIfBranches {
     private int x = 0;
 

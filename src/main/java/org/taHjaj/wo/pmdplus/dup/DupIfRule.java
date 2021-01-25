@@ -1,6 +1,5 @@
 package org.taHjaj.wo.pmdplus.dup;
 
-import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.java.ast.*;
 import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
@@ -43,12 +42,6 @@ public class DupIfRule extends AbstractJavaRule {
                 findDescendantsOfType(child, targetType, results, excludeJavaNodes);
             }
         }
-    }
-
-
-    @Override
-    public void end(RuleContext ctx) {
-        super.end(ctx);
     }
 
     private void addViolations(Map<String, Set<JavaNode>> expression2javanodes, Map<String, Set<JavaNode>> ifExpression2javanodes, Map<String, Set<JavaNode>> violatingExpressions, ASTBlock astBlock, Object data) {
@@ -139,27 +132,6 @@ public class DupIfRule extends AbstractJavaRule {
         }
     }
 
-    private void addExpressions(Map<String, Set<JavaNode>> expression2javanodes, List<JavaNode> ifExpressions) {
-        ifExpressions.forEach(javaNode -> {
-            final String string = toString(javaNode);
-            System.out.printf( "::: %s%n", string);
-
-            addMapping( expression2javanodes, string, javaNode);
-        });
-    }
-
-    private <K,V> void addMappings(Map<K, Set<V>> key2Values, K key2, List<V> newValues) {
-        key2Values.compute( key2, (key, values) -> {
-            if( values == null) {
-                values = new HashSet<>();
-            }
-
-            values.addAll(newValues);
-
-            return values;
-        });
-    }
-
     private <K,V> void addMappings(Map<K, Set<V>> key2Values, K key2, Set<V> newValues) {
         key2Values.compute( key2, (key, values) -> {
             if( values == null) {
@@ -244,23 +216,75 @@ public class DupIfRule extends AbstractJavaRule {
     private List<JavaNode> findAllExpressions(JavaNode node, List<Class<? extends JavaNode>> excludeJavaNodes) {
 
         List<JavaNode> results = new ArrayList<>();
-        List<JavaNode> astRelationalExpressions = new ArrayList<>();
-        findDirectDescendantsOfType(node, ASTRelationalExpression.class, astRelationalExpressions, excludeJavaNodes);
-        for( JavaNode astRelationalExpression : astRelationalExpressions) {
-            results.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(0)));
-            results.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(1)));
-        }
-
-        findDescendantsOfType(node, ASTExpression.class, results, excludeJavaNodes);
-
-        if(isExpression(node)) {
-            results.add(node);
-        } else if( node instanceof ASTPrimaryExpression) {
-            if( node.getNumChildren() == 2
-                    && node.getChild(0) instanceof ASTPrimaryPrefix
-                    && node.getChild(1) instanceof ASTPrimarySuffix) {
+        final boolean present = excludeJavaNodes.stream().findFirst().filter(aClass -> node.getClass().isAssignableFrom(aClass)).isPresent();
+        System.out.printf( "Processing node of type %s: %s%n",
+                node.getClass().getCanonicalName(), node.getImage());
+        if( !present) {
+            if (node instanceof ASTBlock
+                    || node instanceof ASTBlockStatement
+                    || node instanceof ASTStatement
+                    || node instanceof ASTReturnStatement) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTConditionalExpression) {
                 results.add(node);
-                results.addAll(findAllRewritableExpressions(node.getChild(1)));
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTAllocationExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTExpression) {
+//                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTConditionalExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTPrimaryExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTPrimaryExpression) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTName) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTPrimarySuffix) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTArguments) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTConditionalAndExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTPrimaryPrefix) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTLiteral) {
+                results.add(node);
+            } else {
+                List<JavaNode> astRelationalExpressions = new ArrayList<>();
+                findDirectDescendantsOfType(node, ASTRelationalExpression.class, astRelationalExpressions, excludeJavaNodes);
+                for (JavaNode astRelationalExpression : astRelationalExpressions) {
+                    results.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(0)));
+                    results.addAll(findAllRewritableExpressions(astRelationalExpression.getChild(1)));
+                }
+
+                if (node.getNumChildren() == 1) {
+                    final JavaNode astConditionalAndExpression = node.getChild(0);
+                    if (astConditionalAndExpression instanceof ASTConditionalAndExpression) {
+                        results.addAll(findAllRewritableExpressions(astConditionalAndExpression.getChild(0)));
+                        results.addAll(findAllRewritableExpressions(astConditionalAndExpression.getChild(1)));
+                    }
+                }
+
+                findDescendantsOfType(node, ASTExpression.class, results, excludeJavaNodes);
+
+                if (isExpression(node)) {
+                    results.add(node);
+                } else if (node instanceof ASTPrimaryExpression) {
+                    if (node.getNumChildren() == 2
+                            && node.getChild(0) instanceof ASTPrimaryPrefix
+                            && node.getChild(1) instanceof ASTPrimarySuffix) {
+                        results.add(node);
+                        results.addAll(findAllRewritableExpressions(node.getChild(1), excludeJavaNodes));
+                    } else if (node.getNumChildren() == 1) {
+                        results.addAll(findAllRewritableExpressions(node.getChild(0), excludeJavaNodes));
+                    }
+                }
             }
         }
         return results;
@@ -293,26 +317,20 @@ public class DupIfRule extends AbstractJavaRule {
     }
 
     private boolean isExpression(Node node) {
-
-
         return node instanceof ASTExpression
                 || node instanceof ASTAdditiveExpression
                 || node instanceof ASTConditionalAndExpression
                 || node instanceof ASTConditionalOrExpression
-                || node instanceof ASTAndExpression;
+                || node instanceof ASTEqualityExpression
+                || node instanceof ASTAndExpression
+                || node instanceof ASTLiteral;
     }
 
 
     private String toString(JavaNode javaNode) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        toString(stringBuilder, javaNode.getChild(0));
-
-        if( javaNode.getNumChildren() > 1) {
-            for( int i=1; i<javaNode.getNumChildren(); i++) {
-                toString(stringBuilder, javaNode.getChild(i));
-            }
-        }
+        toString(stringBuilder, javaNode);
 
         return stringBuilder.toString();
     }
@@ -320,9 +338,13 @@ public class DupIfRule extends AbstractJavaRule {
     private void toString(StringBuilder stringBuilder, JavaNode javaNode) {
 
         if( javaNode instanceof ASTExpression) {
-            stringBuilder.append('(');
+//            stringBuilder.append('(');
             toString(stringBuilder, javaNode.getChild(0));
-            stringBuilder.append(')');
+//            stringBuilder.append(')');
+        } else if( javaNode instanceof ASTAllocationExpression) {
+            stringBuilder.append("new ");
+            toString(stringBuilder, javaNode.getChild(0));
+            toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTRelationalExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             final String image = javaNode.getImage();
@@ -337,6 +359,12 @@ public class DupIfRule extends AbstractJavaRule {
             toString(stringBuilder, javaNode.getChild(0));
             stringBuilder.append("&&");
             toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTConditionalExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append("?");
+            toString(stringBuilder, javaNode.getChild(1));
+            stringBuilder.append(":");
+            toString(stringBuilder, javaNode.getChild(2));
         } else if( javaNode instanceof ASTConditionalOrExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             stringBuilder.append("||");
@@ -352,9 +380,22 @@ public class DupIfRule extends AbstractJavaRule {
             stringBuilder.append(image);
             toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTArgumentList) {
+            final int numChildren = javaNode.getNumChildren();
+            if( numChildren > 0) {
+                toString( stringBuilder, javaNode.getChild(0));
+                if( numChildren > 1) {
+                    for( int i=1; i<numChildren; i++) {
+                        stringBuilder.append(',');
+                        toString( stringBuilder, javaNode.getChild(i));
+                    }
+                }
+            }
+        } else if( javaNode instanceof ASTArguments) {
+            stringBuilder.append('(');
             for (JavaNode child : javaNode.children()) {
                 toString(stringBuilder, child);
             }
+            stringBuilder.append(')');
         } else if( javaNode instanceof ASTPrimaryExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             if( javaNode.getNumChildren() > 1) {

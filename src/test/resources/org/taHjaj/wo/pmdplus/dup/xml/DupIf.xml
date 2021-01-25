@@ -2,6 +2,88 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(21) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression result.isEmpty() found in lines 3:17,6:20</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            return result.isEmpty() && startVertex != null;
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(22) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            return result.isEmpty() ? empty() : new GreatArcPath(result);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(23) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class EqualsExpression {
+    public Object test(int result) {
+            return new GreatArcPath(result);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(8) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression x&amp;&amp;y found in lines 3:15,4:28</message>
+        </expected-messages>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if( a(x && y)) {
+           x = doSomething(x && y);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(20) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression pt!=null found in lines 4:13,7:13</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public void test() {
+        pt = getStartVertex();
+        if (pt != null) {
+            sequence.add(pt);
+        }
+        if (pt != null) {
+            sequence.add(pt);
+        }
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (19) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -197,24 +279,6 @@ public class CommonExpressionsInAllIfBranches {
     public void test() {
        x = doSomething(f());
        y = doAnotherThing(f());
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(8) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression x&amp;&amp;y found in lines 3:15,4:28</message>
-        </expected-messages>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    public void test() {
-        if( a(x && y)) {
-           x = doSomething(x && y);
-         }
     }
 }
      ]]></code>

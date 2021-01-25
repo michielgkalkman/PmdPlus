@@ -2,6 +2,26 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(24) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>2</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression result&amp;0xff found in lines 3:18,6:21</message>
+            <message>Duplicate if-expression result&amp;0xff==1 found in lines 3:17,6:20</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            if ((result & 0xff) == 1 || startVertex != null) {
+            }
+
+            return (result & 0xff) == 1;
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (23) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>

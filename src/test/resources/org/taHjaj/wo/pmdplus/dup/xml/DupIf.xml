@@ -2,19 +2,48 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
-(21) nested ifs: common expressions can be moved outside the if statement
+(17) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
-        <expected-problems>1</expected-problems>
+        <expected-problems>2</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression result.isEmpty() found in lines 3:17,6:20</message>
+            <message>Duplicate if-expression a() found in lines 5:13,6:17</message>
+            <message>Duplicate if-expression a()&lt;3 found in lines 5:13,6:17</message>
         </expected-messages>
         <code><![CDATA[
-public class EqualsExpression {
-    public boolean test() {
-            return result.isEmpty() && startVertex != null;
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() < 3) {
+            if( a() < 3) {
+           }
+         }
     }
 }
-        ]]></code>
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(11) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>2</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression a() found in lines 5:13,6:21</message>
+            <message>Duplicate if-expression f() found in lines 5:19,7:32</message>
+        </expected-messages>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() < f()) {
+            if( 3 < a()) {
+               x = doSomething(f());
+           }
+         }
+    }
+}
+     ]]></code>
     </test-code>
     <test-code>
         <description><![CDATA[
@@ -25,6 +54,25 @@ public class EqualsExpression {
 public class EqualsExpression {
     public boolean test() {
             return result.isEmpty() ? empty() : new GreatArcPath(result);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(21) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression result.isEmpty() found in lines 3:17,6:20</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            if (result.isEmpty() && startVertex != null) {
+            }
+
+            return result.isEmpty();
     }
 }
         ]]></code>
@@ -121,29 +169,6 @@ public class EqualsExpression {
     </test-code>
     <test-code>
         <description><![CDATA[
-(11) nested ifs: common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>2</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression a() found in lines 5:13,6:21</message>
-            <message>Duplicate if-expression f() found in lines 5:19,7:32</message>
-        </expected-messages>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-        if( a() < f()) {
-            if( 3 < a()) {
-               x = doSomething(f());
-           }
-         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
 (10) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -221,28 +246,6 @@ public class CommonExpressionsInAllIfBranches {
         if(c() > 2) {
            y = doAnotherThing(f());
         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(17) nested ifs: common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>2</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression a() found in lines 5:13,6:17</message>
-            <message>Duplicate if-expression a()&lt;3 found in lines 5:13,6:17</message>
-        </expected-messages>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-        if( a() < 3) {
-            if( a() < 3) {
-           }
-         }
     }
 }
      ]]></code>

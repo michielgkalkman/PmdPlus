@@ -255,6 +255,9 @@ public class DupIfRule extends AbstractJavaRule {
             } else if (node instanceof ASTConditionalAndExpression) {
                 results.add(node);
                 node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTConditionalOrExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else if (node instanceof ASTPrimaryPrefix) {
                 node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else if (node instanceof ASTLiteral) {

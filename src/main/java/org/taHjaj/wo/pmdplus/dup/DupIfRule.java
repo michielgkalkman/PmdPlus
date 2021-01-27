@@ -264,15 +264,27 @@ public class DupIfRule extends AbstractJavaRule {
                 results.add(node);
                 node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else if (node instanceof ASTLiteral) {
+                System.out.printf("Literal %s%n", node.getImage());
 //                results.add(node);
             } else if (node instanceof ASTRelationalExpression) {
 //                List<JavaNode> astRelationalExpressions = new ArrayList<>();
 //                findDirectDescendantsOfType(node, ASTRelationalExpression.class, astRelationalExpressions, excludeJavaNodes);
 //                for (JavaNode astRelationalExpression : astRelationalExpressions) {
                 results.add(node);
-                    results.addAll(findAllRewritableExpressions(node.getChild(0)));
-                    results.addAll(findAllRewritableExpressions(node.getChild(1)));
+                results.addAll(findAllRewritableExpressions(node.getChild(0)));
+                results.addAll(findAllRewritableExpressions(node.getChild(1)));
 //                }
+            } else if (node instanceof ASTEqualityExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTAdditiveExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTMultiplicativeExpression) {
+                results.add(node);
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
+            } else if (node instanceof ASTArgumentList) {
+                node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else {
                 System.out.printf( "Not really processing node of type %s: %s%n",
                         node.getClass().getCanonicalName(), node.getImage());
@@ -357,6 +369,28 @@ public class DupIfRule extends AbstractJavaRule {
 //            stringBuilder.append('(');
             toString(stringBuilder, javaNode.getChild(0));
 //            stringBuilder.append(')');
+        } else if( javaNode instanceof ASTPrimaryPrefix) {
+            if( javaNode.getChild(0) instanceof ASTName
+            || javaNode.getChild(0) instanceof  ASTLiteral) {
+                toString(stringBuilder, javaNode.getChild(0));
+            } else {
+                stringBuilder.append('(');
+                toString(stringBuilder, javaNode.getChild(0));
+                stringBuilder.append(')');
+            }
+        } else if( javaNode instanceof ASTPrimaryExpression) {
+            if( javaNode.getNumChildren() > 1) {
+//                stringBuilder.append('(');
+                toString(stringBuilder, javaNode.getChild(0));
+                toString(stringBuilder, javaNode.getChild(1));
+//                stringBuilder.append(')');
+            } else {
+                toString(stringBuilder, javaNode.getChild(0));
+            }
+        } else if( javaNode instanceof ASTConditionalExpression) {
+            stringBuilder.append('(');
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append(')');
         } else if( javaNode instanceof ASTAllocationExpression) {
             stringBuilder.append("new ");
             toString(stringBuilder, javaNode.getChild(0));
@@ -389,6 +423,10 @@ public class DupIfRule extends AbstractJavaRule {
             toString(stringBuilder, javaNode.getChild(0));
             stringBuilder.append("&");
             toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTMultiplicativeExpression) {
+            toString(stringBuilder, javaNode.getChild(0));
+            stringBuilder.append("*");
+            toString(stringBuilder, javaNode.getChild(1));
         } else if( javaNode instanceof ASTEqualityExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             final String image = javaNode.getImage();
@@ -411,11 +449,6 @@ public class DupIfRule extends AbstractJavaRule {
                 toString(stringBuilder, child);
             }
             stringBuilder.append(')');
-        } else if( javaNode instanceof ASTPrimaryExpression) {
-            toString(stringBuilder, javaNode.getChild(0));
-            if( javaNode.getNumChildren() > 1) {
-                toString(stringBuilder, javaNode.getChild(1));
-            }
        } else {
             final int numChildren = javaNode.getNumChildren();
             if (numChildren > 0) {

@@ -2,12 +2,31 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(28) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>2</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression (result&amp;0xff)==1 found in lines 3:17,6:20</message>
+            <message>Duplicate if-expression result&amp;0xff found in lines 3:18,6:21</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public void test() {
+            if (array[i] == otherSeparator) {
+                array[i] = separator;
+            }
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (24) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>2</expected-problems>
         <expected-messages>
+            <message>Duplicate if-expression (result&amp;0xff)==1 found in lines 3:17,6:20</message>
             <message>Duplicate if-expression result&amp;0xff found in lines 3:18,6:21</message>
-            <message>Duplicate if-expression result&amp;0xff==1 found in lines 3:17,6:20</message>
         </expected-messages>
         <code><![CDATA[
 public class EqualsExpression {
@@ -22,7 +41,41 @@ public class EqualsExpression {
     </test-code>
     <test-code>
         <description><![CDATA[
-(23) nested ifs: common expressions can be moved outside the if statement
+(19) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression cmp==0 found in lines 4:13,5:17</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public void test() {
+        int cmp = Vector2D.COORDINATE_ASCENDING_ORDER.compare(start, other.start);
+        if (cmp == 0) {
+            if (cmp == 0) {
+                x();
+            }
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(26) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            return (a+b)*c == a+(b*c);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(27) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
         <expected-messages>
@@ -35,6 +88,67 @@ public class EqualsExpression {
             }
 
             return result.isEmpty();
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(23) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class EqualsExpression {
+    public Object test(int result) {
+            return new GreatArcPath(result);
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(2) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( f()) {
+           x = doSomething(f());
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(6) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if( a(0)) {
+           x = doSomething(0);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(25) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression a+b found in lines 3:20,3:27</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            return a+b == a+b;
     }
 }
         ]]></code>
@@ -118,19 +232,6 @@ public class EqualsExpression {
     </test-code>
     <test-code>
         <description><![CDATA[
-(23) nested ifs: common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>0</expected-problems>
-        <code><![CDATA[
-public class EqualsExpression {
-    public Object test(int result) {
-            return new GreatArcPath(result);
-    }
-}
-        ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
 (8) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -168,27 +269,6 @@ public class EqualsExpression {
     }
 }
         ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(19) nested ifs: common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression cmp==0 found in lines 4:13,5:17</message>
-        </expected-messages>
-        <code><![CDATA[
-public class EqualsExpression {
-    public void test() {
-        int cmp = Vector2D.COORDINATE_ASCENDING_ORDER.compare(start, other.start);
-        if (cmp == 0) {
-            if (cmp == 0) {
-                x();
-            }
-        }
-    }
-}
-     ]]></code>
     </test-code>
     <test-code>
         <description><![CDATA[
@@ -361,21 +441,6 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
-(6) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>0</expected-problems>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    public void test() {
-        if( a(0)) {
-           x = doSomething(0);
-         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
 (5) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>0</expected-problems>
@@ -404,23 +469,6 @@ public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( f() + 7) {
            x = doSomething(f() + 7);
-         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(2) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-        if( f()) {
-           x = doSomething(f());
          }
     }
 }

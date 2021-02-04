@@ -57,7 +57,8 @@ public class DupIfRule extends AbstractJavaRule {
         final List<JavaNode> expressions = findAllRewritableExpressions(astBlock, Collections.singletonList(ASTIfStatement.class));
 
         // include if statements, but not then and else branches
-        astIfStatements.forEach(astIfStatement -> expressions.addAll( findAllRewritableExpressions(astIfStatement.getChild(0), Collections.singletonList(ASTIfStatement.class))));
+        astIfStatements.forEach(astIfStatement -> expressions.addAll(
+                findAllRewritableExpressions(astIfStatement.getChild(0), Collections.singletonList(ASTIfStatement.class))));
 
         dump(expressions);
 
@@ -119,16 +120,30 @@ public class DupIfRule extends AbstractJavaRule {
             addViolations( thenExpression2javanodes, ifExpression2javanodes, violatingExpressions, ((ASTBlock) astIfStatement.getThenBranch().getChild(0)), data);
 
             Map<String, Set<JavaNode>> elseExpression2javanodes = new HashMap<>();
-            addViolations( elseExpression2javanodes, ifExpression2javanodes, violatingExpressions, ((ASTBlock) astIfStatement.getElseBranch().getChild(0)), data);
+            final JavaNode child = astIfStatement.getElseBranch().getChild(0);
+            if( child instanceof ASTBlock) {
+                addViolations(elseExpression2javanodes, ifExpression2javanodes, violatingExpressions, ((ASTBlock) child), data);
 
-            thenExpression2javanodes.forEach( (javaNodeExpressionString, javaNodes) -> {
-                if( elseExpression2javanodes.containsKey(javaNodeExpressionString)) {
-                    addMappings( expression2javanodes, javaNodeExpressionString, thenExpression2javanodes.get( javaNodeExpressionString));
-                    addMappings( expression2javanodes, javaNodeExpressionString, elseExpression2javanodes.get( javaNodeExpressionString));
-                    addMappings( violatingExpressions, javaNodeExpressionString, thenExpression2javanodes.get( javaNodeExpressionString));
-                    addMappings( violatingExpressions, javaNodeExpressionString, elseExpression2javanodes.get( javaNodeExpressionString));
-                }
-            });
+                thenExpression2javanodes.forEach((javaNodeExpressionString, javaNodes) -> {
+                    if (elseExpression2javanodes.containsKey(javaNodeExpressionString)) {
+                        addMappings(expression2javanodes, javaNodeExpressionString, thenExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(expression2javanodes, javaNodeExpressionString, elseExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(violatingExpressions, javaNodeExpressionString, thenExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(violatingExpressions, javaNodeExpressionString, elseExpression2javanodes.get(javaNodeExpressionString));
+                    }
+                });
+            } else {
+                addViolations(elseExpression2javanodes, ifExpression2javanodes, violatingExpressions, ((ASTIfStatement) child), data);
+
+                thenExpression2javanodes.forEach((javaNodeExpressionString, javaNodes) -> {
+                    if (elseExpression2javanodes.containsKey(javaNodeExpressionString)) {
+                        addMappings(expression2javanodes, javaNodeExpressionString, thenExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(expression2javanodes, javaNodeExpressionString, elseExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(violatingExpressions, javaNodeExpressionString, thenExpression2javanodes.get(javaNodeExpressionString));
+                        addMappings(violatingExpressions, javaNodeExpressionString, elseExpression2javanodes.get(javaNodeExpressionString));
+                    }
+                });
+            }
         }
     }
 
@@ -222,8 +237,13 @@ public class DupIfRule extends AbstractJavaRule {
         if( !present) {
             if (node instanceof ASTBlock
                     || node instanceof ASTBlockStatement
+                    || node instanceof ASTForStatement
+                    || node instanceof ASTForInit
+                    || node instanceof ASTForUpdate
+                    || node instanceof ASTLocalVariableDeclaration
                     || node instanceof ASTStatement
                     || node instanceof ASTStatementExpression
+                    || node instanceof ASTStatementExpressionList
                     || node instanceof ASTReturnStatement) {
                 node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else if (node instanceof ASTConditionalExpression) {
@@ -420,6 +440,19 @@ public class DupIfRule extends AbstractJavaRule {
             toString(stringBuilder, javaNode.getChild(0));
             stringBuilder.append("||");
             toString(stringBuilder, javaNode.getChild(1));
+        } else if( javaNode instanceof ASTClassOrInterfaceType) {
+            stringBuilder.append( javaNode.getImage());
+        } else if( javaNode instanceof ASTTypeArguments) {
+            stringBuilder.append("<");
+            final int numChildren = javaNode.getNumChildren();
+            if(javaNode.getNumChildren() > 0) {
+                toString(stringBuilder, javaNode.getChild(0));
+                for (int i = 1; i < numChildren; i++) {
+                    stringBuilder.append(',');
+                    toString(stringBuilder, javaNode.getChild(0));
+                }
+            }
+            stringBuilder.append(">");
         } else if( javaNode instanceof ASTAndExpression) {
             toString(stringBuilder, javaNode.getChild(0));
             stringBuilder.append("&");

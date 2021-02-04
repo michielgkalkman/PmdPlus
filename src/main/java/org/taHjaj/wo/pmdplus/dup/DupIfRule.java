@@ -449,6 +449,15 @@ public class DupIfRule extends AbstractJavaRule {
                 toString(stringBuilder, child);
             }
             stringBuilder.append(')');
+        } else if ( javaNode instanceof ASTPrimarySuffix) {
+            ASTPrimarySuffix astPrimarySuffix = (ASTPrimarySuffix) javaNode;
+            if( astPrimarySuffix.isArrayDereference()) {
+                stringBuilder.append( '[');
+                for (JavaNode child : javaNode.children()) {
+                    toString(stringBuilder, child);
+                }
+                stringBuilder.append( ']');
+            }
        } else {
             final int numChildren = javaNode.getNumChildren();
             if (numChildren > 0) {

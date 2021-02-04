@@ -2,19 +2,38 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
-(28) nested ifs: common expressions can be moved outside the if statement
+(4) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>2</expected-problems>
         <expected-messages>
-            <message>Duplicate if-expression (result&amp;0xff)==1 found in lines 3:17,6:20</message>
-            <message>Duplicate if-expression result&amp;0xff found in lines 3:18,6:21</message>
+            <message>Duplicate if-expression f() found in lines 5:13,6:28</message>
+            <message>Duplicate if-expression f()+7 found in lines 5:13,6:28</message>
+        </expected-messages>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( f() + 7) {
+           x = doSomething(f() + 7);
+         }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(28) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression array[i] found in lines 3:13,4:13</message>
         </expected-messages>
         <code><![CDATA[
 public class EqualsExpression {
     public void test() {
-            if (array[i] == otherSeparator) {
-                array[i] = separator;
-            }
+            array[i] = otherSeparator;
+            array[i] = separator;
     }
 }
         ]]></code>
@@ -449,26 +468,6 @@ public class CommonExpressionsInAllIfBranches {
     public void test() {
         if( a(f)) {
            x = doSomething(f);
-         }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(4) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression f()+7 found in lines 5:13,6:28</message>
-        </expected-messages>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-        if( f() + 7) {
-           x = doSomething(f() + 7);
          }
     }
 }

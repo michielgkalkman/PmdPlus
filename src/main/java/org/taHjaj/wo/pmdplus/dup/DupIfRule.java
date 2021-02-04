@@ -223,6 +223,7 @@ public class DupIfRule extends AbstractJavaRule {
             if (node instanceof ASTBlock
                     || node instanceof ASTBlockStatement
                     || node instanceof ASTStatement
+                    || node instanceof ASTStatementExpression
                     || node instanceof ASTReturnStatement) {
                 node.children().forEach(javaNode -> results.addAll(findAllExpressions(javaNode, excludeJavaNodes)));
             } else if (node instanceof ASTConditionalExpression) {
@@ -457,6 +458,12 @@ public class DupIfRule extends AbstractJavaRule {
                     toString(stringBuilder, child);
                 }
                 stringBuilder.append( ']');
+            } else {
+//                stringBuilder.append( '(');
+                for (JavaNode child : javaNode.children()) {
+                    toString(stringBuilder, child);
+                }
+//                stringBuilder.append( ')');
             }
        } else {
             final int numChildren = javaNode.getNumChildren();

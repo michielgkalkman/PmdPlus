@@ -2,6 +2,23 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(31) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression f() found in lines 3:21,4:21</message>
+        </expected-messages>
+        <code><![CDATA[
+public class EqualsExpression {
+    public boolean test() {
+            int x = f();
+            int y = f();
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (22) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>0</expected-problems>

@@ -2,6 +2,54 @@
 <test-data xmlns="http://pmd.sourceforge.net/rule-tests">
     <test-code>
         <description><![CDATA[
+(33) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        if (depth <= maxDepth) {
+            startLine(node);
+        } else if (depth == maxDepth + 1 && node.isPlus()) {
+            startLine(node);
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(30) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>Duplicate if-expression origBoundaries.size() found in lines 3:26,4:29</message>
+        </expected-messages>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    public void test() {
+        final int size = origBoundaries.size();
+        for (int i = 1; i < origBoundaries.size(); ++i) {
+        }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(32) nested ifs: common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class EqualsExpression {
+    private boolean isConvex(final Collection<Vector2D> vertices) {
+        return precision.compare(v1.signedArea(v2), 0.0) < 0;
+    }
+}
+        ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
 (31) nested ifs: common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -45,24 +93,6 @@ public class CommonExpressionsInAllIfBranches {
             return new Split<>(null, thisInstance);
         } else if (plusBoundaries.isEmpty()) {
             return new Split<>(thisInstance, null);
-        }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
-(30) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>1</expected-problems>
-        <expected-messages>
-            <message>Duplicate if-expression origBoundaries.size() found in lines 3:26,4:29</message>
-        </expected-messages>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    public void test() {
-        final int size = origBoundaries.size();
-        for (int i = 1; i < origBoundaries.size(); ++i) {
         }
     }
 }
@@ -421,30 +451,6 @@ public class CommonExpressionsInAllIfBranches {
     </test-code>
     <test-code>
         <description><![CDATA[
-(16) common expressions can be moved outside the if statement
-        ]]></description>
-        <expected-problems>0</expected-problems>
-        <code><![CDATA[
-public class CommonExpressionsInAllIfBranches {
-    private int x = 0;
-
-    public void test() {
-        if( a() > 2) {
-           x = doSomething(f());
-        } else {
-            if(b() > 2) {
-               y = doAnotherThing(f());
-            }
-        }
-        if(c() > 2) {
-           y = doAnotherThing(f());
-        }
-    }
-}
-     ]]></code>
-    </test-code>
-    <test-code>
-        <description><![CDATA[
 (1) common expressions can be moved outside the if statement
         ]]></description>
         <expected-problems>1</expected-problems>
@@ -541,6 +547,30 @@ public class CommonExpressionsInAllIfBranches {
         if( g(f())) {
            x = doSomething(f());
          }
+    }
+}
+     ]]></code>
+    </test-code>
+    <test-code>
+        <description><![CDATA[
+(16) common expressions can be moved outside the if statement
+        ]]></description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+public class CommonExpressionsInAllIfBranches {
+    private int x = 0;
+
+    public void test() {
+        if( a() > 2) {
+           x = doSomething(f());
+        } else {
+            if(b() > 2) {
+               y = doAnotherThing(f());
+            }
+        }
+        if(c() > 2) {
+           y = doAnotherThing(f());
+        }
     }
 }
      ]]></code>
